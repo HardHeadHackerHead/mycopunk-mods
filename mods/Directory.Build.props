@@ -1,0 +1,51 @@
+<Project>
+  <!-- Shared by every mod in mods\: a mod's own .csproj only names itself and any extra game DLLs it needs.
+       BepInEx and HarmonyX come from NuGet (nothing has to be installed in the game to build); the game's own DLLs from
+       its Managed folder. Pass -p:GameDir=... (scripts\build.ps1 -GameDir, or MYCO_GAMEDIR) for another install. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+    <!-- (the game's DLLs and netstandard disagree on System.Net.Http's version: harmless) -->
+    <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);MSB3277</MSBuildWarningsAsMessages>
+    <GameDir Condition="'$(GameDir)' == '' and '$(MYCO_GAMEDIR)' != ''">$(MYCO_GAMEDIR)</GameDir>
+    <GameDir Condition="'$(GameDir)' == ''">D:\SteamLibrary\steamapps\common\Mycopunk</GameDir>
+    <Managed>$(GameDir)\Mycopunk_Data\Managed</Managed>
+    <!-- where -Deploy copies the mod: the game's BepInEx\plugins by default, or a mod manager profile's (PluginsDir) -->
+    <PluginsDir Condition="'$(PluginsDir)' == ''">$(GameDir)\BepInEx\plugins</PluginsDir>
+    <PluginOut>$(PluginsDir)\$(MSBuildProjectName)</PluginOut>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Core" Version="5.4.21" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Thunderstore asks for this in every AI-assisted DLL -->
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>AI_Assisted_Creation</_Parameter1>
+      <_Parameter2>This assembly was partially or fully created with the assistance of Generative AI.</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>AI_Model_Vendor</_Parameter1>
+      <_Parameter2>Anthropic</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(Managed)\Assembly-CSharp.dll" Private="false" Publicize="true" />
+    <Reference Include="$(Managed)\UnityEngine.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.CoreModule.dll" Private="false" />
+  </ItemGroup>
+
+  <!-- Only into a game or profile folder for tests (scripts\build.ps1 -Deploy) -->
+  <Target Name="DeployMod" AfterTargets="Build" Condition="'$(DeployMods)' == 'true'">
+    <MakeDir Directories="$(PluginOut)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(PluginOut)" />
+  </Target>
+</Project>

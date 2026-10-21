@@ -1,0 +1,22 @@
+{
+  "team": "Quads_Lab",
+  "name": "No_Blasphemy",
+  "description": "Clean dialogue: takes God's name used in vain out of what the characters say. Subtitles cleaned (family friendly, censor, filter), those voice lines silenced. Respectful lines stay. Client only.",
+  "website": "https://github.com/HardHeadHackerHead/mycopunk-mods/tree/main/mods/NoBlasphemy",
+  "dependencies": [
+    "BepInEx-BepInExPack_Mycopunk-5.4.2403"
+  ],
+  "files": [
+    "mods/NoBlasphemy/bin/Release/netstandard2.1/NoBlasphemy.dll"
+  ],
+  "plugin_folder": "NoBlasphemy",
+  "icon": "mods/NoBlasphemy/icon.png",
+  "thunderstore": {
+    "community": "mycopunk",
+    "categories": [
+      "client",
+      "audio",
+      "qol"
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- No Blasphemy: client only (it changes what you hear and read, nothing anyone else sees). The shared settings and
+       references are in ..\Directory.Build.props. -->
+  <ItemGroup>
+    <Reference Include="$(Managed)\AK.Wwise.Unity.API.dll" Private="false" />
+  </ItemGroup>
+</Project>

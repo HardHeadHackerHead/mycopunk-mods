@@ -1,0 +1,14 @@
+# build output
+build/
+mods/**/bin/
+mods/**/obj/
+*.user
+__pycache__/
+
+# the game's decompiled code: local reference only, never published (regenerate with ilspycmd from Assembly-CSharp.dll)
+notes/decompiled/
+
+# local AI/project tooling (QuadFlow, Claude Code): kept on disk, never published
+.claude/
+.quadflow/
+CLAUDE.md
