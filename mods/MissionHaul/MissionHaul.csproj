@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Quad's Mission Haul. The shared settings and references are in ..\Directory.Build.props. -->
+  <ItemGroup>
+    <Reference Include="$(Managed)\Unity.TextMeshPro.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.UI.dll" Private="false" />
+    <Reference Include="$(Managed)\Unity.InputSystem.dll" Private="false" />
+    <Reference Include="$(Managed)\Unity.Netcode.Runtime.dll" Private="false" />
+    <Reference Include="$(Managed)\Newtonsoft.Json.dll" Private="false" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,21 @@
+{
+  "team": "Quads_Lab",
+  "name": "Quads_Mission_Haul",
+  "description": "Mission haul: see each resource's new total on the mission reward screen (+40 -> 1226) and what you've earned this session across missions: resources, upgrades by rarity, XP. Client only.",
+  "website": "https://github.com/HardHeadHackerHead/mycopunk-mods/tree/main/mods/MissionHaul",
+  "dependencies": [
+    "BepInEx-BepInExPack_Mycopunk-5.4.2403"
+  ],
+  "files": [
+    "mods/MissionHaul/bin/Release/netstandard2.1/MissionHaul.dll"
+  ],
+  "plugin_folder": "MissionHaul",
+  "icon": "mods/MissionHaul/icon.png",
+  "thunderstore": {
+    "community": "mycopunk",
+    "categories": [
+      "client",
+      "qol"
+    ]
+  }
+}

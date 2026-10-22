@@ -70,6 +70,14 @@ upgrade, not only once you start holding the key, and every cost shows against h
 
 **[More: how it works, settings and a screenshot →](mods/UpgradeCostPreview/README.md)**
 
+### 📦 Quad's Mission Haul
+<img src="mods/MissionHaul/cover.png" alt="Quad's Mission Haul" width="100%">
+
+Count your loot. On the mission reward screen, each resource you earned shows its new total (**+98 → 1284**), and from your
+second mission on, a panel adds up all your missions this session: resources, upgrades by rarity and XP. Only you need it.
+
+**[More: how it works, settings and a screenshot →](mods/MissionHaul/README.md)**
+
 ## 🧑‍💻 For developers
 
 You need the .NET SDK and the game. BepInEx and HarmonyX come from NuGet, so nothing has to be installed in the game to build.
