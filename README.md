@@ -96,6 +96,15 @@ The host and whoever crawls need it.
 
 **[More: how it works, keys, multiplayer and settings →](mods/PullYourselfTogether/README.md)**
 
+### 🏁 Quad's Hub Raceway
+<img src="mods/HubRaceway/cover.png" alt="Quad's Hub Raceway" width="100%">
+
+A racetrack woven through the H.U.B.: under its legs, beneath its belly, round its tower and over its dome. Step through the portal
+(in your car, if you like), ride the walls and ceiling of the light tube, grab **power-ups** from item boxes, and **race your
+friends** with sign-ups, the grid and real start lights. Everyone who drives it needs it, the host too.
+
+**[More: the track, power-ups, races and screenshots →](mods/HubRaceway/README.md)**
+
 ## 🧑‍💻 For developers
 
 You need the .NET SDK and the game. BepInEx and HarmonyX come from NuGet, so nothing has to be installed in the game to build.

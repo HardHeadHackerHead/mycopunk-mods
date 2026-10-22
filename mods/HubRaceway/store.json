@@ -1,0 +1,21 @@
+{
+    "team": "Quads_Lab",
+    "name": "Quads_Hub_Raceway",
+    "description": "A racetrack woven through the hub: ride the light tube's walls, grab power-ups, and race friends with real start lights.",
+    "website": "https://github.com/HardHeadHackerHead/mycopunk-mods/tree/main/mods/HubRaceway",
+    "dependencies": [
+        "BepInEx-BepInExPack_Mycopunk-5.4.2403"
+    ],
+    "files": [
+        "mods/HubRaceway/bin/Release/netstandard2.1/HubRaceway.dll"
+    ],
+    "plugin_folder": "HubRaceway",
+    "icon": "mods/HubRaceway/icon.png",
+    "thunderstore": {
+        "community": "mycopunk",
+        "categories": [
+            "client",
+            "mods"
+        ]
+    }
+}

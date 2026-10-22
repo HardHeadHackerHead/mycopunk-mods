@@ -1,0 +1,25 @@
+Use case: stylized-concept
+Asset type: Original square Thunderstore icon for the Mycopunk fan mod "Quad's Hub Raceway". Generate one high-resolution square artwork, ideally 1024x1024, to export as 256x256 PNG and check at 64x64.
+
+Primary request: ONE simple iconic subject: a sleek scuffed mustard-and-cream WHEELLESS hover racing car at full boost, seen in a dramatic three-quarter front view, floating above a dark road. Match the car concept and inked Quads Lab Mycopunk series style of the cover and previously inspected icons. A large short cream label reads "RACEWAY".
+
+Subject: One low angular wedge-shaped hover racer with a broad cream center stripe, mustard side armor, black vents and a small dark cyan cockpit canopy. Keep the car body very large and simple, filling the upper 65 percent. The nose points toward the lower-left/center, the rear toward upper-right. Show the underside enough to clearly reveal two broad FLAT CYAN REPULSOR PANELS, glowing DOWNWARD from underneath the chassis. A clearly visible dark levitation gap separates the car from the road. Two vivid cyan-white boost streaks trail behind it toward the upper right, with a restrained magenta edge accent. No visible driver required: avoid a tiny separate character competing with the vehicle.
+IMPORTANT: Absolutely NO WHEELS, tires, wheel arches, axles or side-mounted circular discs. This car FLOATS on flat underside repulsors. No wings; it follows the road, not flying through open space.
+
+Composition: Full-bleed square. The unified car/boost silhouette occupies the upper 65 percent, with a few diagonal speed slashes and one simple cyan road-edge swoosh behind it. Deep navy background; a faint incomplete magenta/cyan arc can suggest the neon race tube but no detailed scenery. Bottom 30 percent is a solid rough-edged deep navy label field. ONE very large centered line reads "RACEWAY", with all seven letters fully inside generous 6 percent side margins. Give this label very bold thick cream strokes and strong spacing so it remains readable at actual 64x64. Keep the vehicle separate from the lettering. No extra props, station, planet, item boxes, flags, gantry, badges or secondary subject.
+
+Style: Match the inspected Quads Lab Mycopunk icons: thick slightly irregular black comic ink outlines, angular cel shadows, broad flat cream and mustard/rust metal shapes, electric cyan repulsor glow, restrained hot magenta accents, deep navy. Very few large deliberate scuffs and sparse coarse halftone in dark shadows. No fine noise, dense stippling, photorealistic texture or soft painterly gradients. Bold silhouette and small-icon clarity come first.
+Text (verbatim; ONLY text anywhere): "RACEWAY". Spell R A C E W A Y. Extra-bold condensed uppercase sans/stencil-inspired comic letters with continuous solid cream strokes and almost no distress. No subtitle, logo or other writing.
+Mood: Playful, very fast, heroic sci-fi hover racing.
+Constraints: Entirely original art and typography. No official Mycopunk logo or exact official characters, no copied UI, screenshot, human portrait, coffee branding, watermark, wheels, pixel art, medieval fantasy, photorealism or 3D render. Opaque background.
+
+GENERATION AND EXPORT NOTES
+Created with the built-in imagegen tool. icon-source.png is the untouched generated original (1254x1254 RGB PNG).
+Export command:
+python C:/Users/DHack/.codex/skills/quads-mod-art/scripts/export_art.py build/artwork-preview/hub-raceway/icon-source.png build/artwork-preview/hub-raceway/icon.png --size 256x256 --preview-size 64
+Renamed the helper's icon-64px.png to the requested icon-64.png.
+Final icon.png: 256x256 RGB PNG, 108030 bytes.
+Final icon-64.png: 64x64 RGB PNG, 9757 bytes.
+Visually checked the 256px icon and actual 64px preview: exact readable RACEWAY lettering, a single dominant wheelless hover car with cyan underside repulsors, clear margins, comic ink contours and the Mycopunk Quads Lab series palette.
+All task outputs are for review under build/artwork-preview/hub-raceway. No mods/ files were changed by this artwork task; no commit or publication.
+
