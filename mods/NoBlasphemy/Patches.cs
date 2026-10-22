@@ -10,6 +10,36 @@ namespace NoBlasphemy
         private static void Postfix() => Filter.Apply();
     }
 
+    // A line picked at random from several: one that uses the name becomes one of the others (SwapLines), before the game shows
+    // its subtitle or plays its voice, so the two always match. (Lines picked by number, in conversations, stay as they are.)
+    [HarmonyPatch(typeof(TextBlocks.TextBlockGroup), nameof(TextBlocks.TextBlockGroup.Get), new System.Type[0])]
+    internal static class PickAny
+    {
+        private static void Postfix(ref TextBlocks.TextBlock __result) => __result = Filter.Swap(__result);
+    }
+
+    [HarmonyPatch(typeof(TextBlocks.TextBlockGroup), nameof(TextBlocks.TextBlockGroup.Get),
+        new[] { typeof(Pigeon.Math.Random) }, new[] { ArgumentType.Ref })]
+    internal static class PickSeeded
+    {
+        private static void Postfix(ref TextBlocks.TextBlock __result) => __result = Filter.Swap(__result);
+    }
+
+    // (a character's own lines: the call for help, the repair call, quips)
+    [HarmonyPatch(typeof(TextBlocks.TextBlockGroup), nameof(TextBlocks.TextBlockGroup.GetTextVariant),
+        new[] { typeof(string), typeof(string), typeof(Pigeon.Math.Random), typeof(TextBlocks.TextBlock) },
+        new[] { ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Out })]
+    internal static class PickCharacterLine
+    {
+        private static void Postfix(string parameter, ref TextBlocks.TextBlock block, ref string __result)
+        {
+            TextBlocks.TextBlock other = Filter.Swap(block);
+            if (other == block) return;
+            block = other;
+            __result = other.GetText(parameter);
+        }
+    }
+
     // A player character's line. Answering "no sound" makes the game pace the line by its subtitle instead.
     [HarmonyPatch(typeof(Highlighter), nameof(Highlighter.PlayVoicelineSound),
         new[] { typeof(TextBlocks.TextBlock), typeof(GameObject), typeof(string), typeof(AkCallbackManager.EventCallback), typeof(object) })]

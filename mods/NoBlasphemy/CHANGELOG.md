@@ -1,3 +1,3 @@
 ## 1.0.0
 
-- First release: God's name used in vain taken out of the dialogue, cleaned in the subtitles and silenced in the voice lines.
+- First release: God's name used in vain taken out of the dialogue, in every language: the subtitles cleaned, the voice lines swapped for clean ones or silenced.

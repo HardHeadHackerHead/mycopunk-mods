@@ -12,16 +12,18 @@ namespace NoBlasphemy
 {
     // Takes God's name used in vain out of what the characters say: the subtitle is cleaned and the spoken line is
     // silenced (a recording can't lose a single word). Client only: it changes what you hear and read, nothing else.
-    [BepInPlugin(Guid, "No Blasphemy", Version)]
+    [BepInPlugin(Guid, Title, Version)]
     [BepInProcess("Mycopunk.exe")]
     public class Plugin : BaseUnityPlugin
     {
         public const string Guid = "quadslab.mycopunk.noblasphemy";
+        public const string Title = "Quad's No Blasphemy";
         public const string Version = "1.0.0";
 
         internal static ManualLogSource Log;
         internal static ConfigEntry<bool> MuteVoice;
         internal static ConfigEntry<bool> CleanSubtitles;
+        internal static ConfigEntry<bool> SwapLines;
         internal static ConfigEntry<string> KeepLines;
         internal static ConfigEntry<string> ExtraLines;
         internal static ConfigEntry<bool> LogLines;
@@ -33,9 +35,11 @@ namespace NoBlasphemy
             MuteVoice = Config.Bind("General", "MuteVoice", true,
                 "Silence the spoken lines that use God's name in vain. A recording can't lose just one word, so the whole line is quiet; its subtitle still shows, cleaned.");
             CleanSubtitles = Config.Bind("General", "CleanSubtitles", true,
-                "Take God's name out of those lines' subtitles (English). Takes effect at the next start.");
-            KeepLines = Config.Bind("Lines", "Keep", "exch_faith_5",
-                "Line IDs to leave alone, comma-separated: lines that speak of God with respect. Takes effect at the next start.");
+                "Take God's name out of the subtitles, in every language the game has. Takes effect at the next start.");
+            SwapLines = Config.Bind("General", "SwapLines", true,
+                "When a character has other lines for the same moment (a call for help), say one of those instead of going quiet.");
+            KeepLines = Config.Bind("Lines", "Keep", "",
+                "More line IDs to leave alone, comma-separated (the lines that speak of God sincerely are always kept). Takes effect at the next start.");
             ExtraLines = Config.Bind("Lines", "Extra", "",
                 "More line IDs to clean and silence, comma-separated, for any line the word list misses. Takes effect at the next start.");
             LogLines = Config.Bind("Debug", "LogLines", false,

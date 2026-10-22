@@ -52,12 +52,13 @@ Add **ScriptEngine** to BepInEx and mods load from `BepInEx\scripts`, where a ne
 
 ## 🧰 The mods
 
-### 🙏 No Blasphemy
-<img src="mods/NoBlasphemy/icon.png" alt="No Blasphemy" width="200">
+### 🙏 Quad's No Blasphemy
+<img src="mods/NoBlasphemy/icon.png" alt="Quad's No Blasphemy" width="200">
 
-Takes **God's name used in vain** out of the dialogue. The subtitles are cleaned ("oh my gosh", "thank goodness"), and those spoken
-lines go quiet, since a recording can't lose just one word. Lines that speak of God with respect stay, and the milder swearing is
-left alone. Only you need it: it changes only what you hear and read.
+Takes **God's name used in vain** out of the dialogue, in all ten of the game's languages. The subtitles are cleaned ("oh my gosh",
+"thank goodness"). Since a recording can't lose just one word, those spoken lines are swapped for a clean line meant for the same
+moment, or go quiet when there's none. Lines that speak of God with respect stay, and the milder swearing is left alone. Only you need
+it: it changes only what you hear and read.
 
 **[More: how it works and settings →](mods/NoBlasphemy/README.md)**
 
@@ -76,6 +77,8 @@ python scripts\store.py NoBlasphemy                   # the Thunderstore package
 
 - The game folder defaults to `D:\SteamLibrary\steamapps\common\Mycopunk`; pass `-GameDir` (or set `MYCO_GAMEDIR`) for yours.
   `-PluginsDir` deploys somewhere else, such as a mod manager profile's `BepInEx\plugins`.
+- Every mod's name starts with **Quad's** and its Thunderstore package with **`Quads_`** (`Quads_No_Blasphemy`), like the
+  Valheim mods; `new-mod.ps1` does this for you.
 - Each mod is a folder under `mods/` with its own `.csproj`, `Plugin.cs`, `README.md` (its page, linked from its card above),
   `CHANGELOG.md`, `LICENSE.md`, `store.json` (its Thunderstore listing) and `icon.png` (256 x 256). Shared build settings are in
   `mods/Directory.Build.props`, so a mod's own `.csproj` is a few lines.

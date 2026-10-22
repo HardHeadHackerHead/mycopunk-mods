@@ -15,6 +15,10 @@ namespace NoBlasphemy
     //  - by event, for IDs where every character's line is one to silence (mission control, the truck, and the rest).
     internal static class Filter
     {
+        // Lines that speak of God sincerely, in English or in a translation: never changed. (The Wrangler on faith, and on the
+        // Lord being a carpenter.)
+        private static readonly string[] Reverent = { "exch_faith_5", "vl_building_2" };
+
         private static readonly HashSet<TextBlocks.TextBlock> blocked = new HashSet<TextBlocks.TextBlock>();
         private static readonly HashSet<string> mutedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, float> durations = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
@@ -51,8 +55,10 @@ namespace NoBlasphemy
             durations.Clear();
             mutedIds = null;
             HashSet<string> keep = Ids(Plugin.KeepLines.Value), extra = Ids(Plugin.ExtraLines.Value);
+            keep.UnionWith(Reverent);
             Dictionary<string, string> english = ReadEnglish();
-            bool cleanText = Plugin.CleanSubtitles.Value && TextBlocks.LanguageIndex == 0;
+            int language = TextBlocks.LanguageIndex;
+            bool cleanText = Plugin.CleanSubtitles.Value;
             var everyLineBlocked = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
             int cleaned = 0;
 
@@ -62,23 +68,40 @@ namespace NoBlasphemy
             {
                 string id = block.uniqueID;
                 if (!english.TryGetValue(Key(id, variant), out string en) && !english.TryGetValue(Key(id, null), out en))
-                    en = TextBlocks.LanguageIndex == 0 ? block.text : null;
-                bool bad = extra.Contains(id) || (!keep.Contains(id) && Words.IsBlasphemous(en));
+                    en = language == 0 ? block.text : null;
+                bool kept = keep.Contains(id);
+                // the voice is English in every language, so the English decides what is silenced; the subtitle is cleaned
+                // when either says it (a translation can use the name where the English doesn't)
+                bool bad = extra.Contains(id) || (!kept && Words.IsBlasphemous(en));
+                bool badText = bad || (!kept && language != 0 && Words.IsBlasphemous(block.text, language));
                 everyLineBlocked[id] = (!everyLineBlocked.TryGetValue(id, out bool all) || all) && bad;
-                if (!bad) return;
-                blocked.Add(block);
-                found.Add((groupKey, index, variant, id));
-                durations[id] = Mathf.Clamp(1f + (en ?? block.text).Length * 0.055f, 2f, 12f);
+                if (bad)
+                {
+                    blocked.Add(block);
+                    found.Add((groupKey, index, variant, id));
+                    durations[id] = Mathf.Clamp(1f + (en ?? block.text).Length * 0.055f, 2f, 12f);
+                }
+                if (!badText) return;
                 if (cleanText)
                 {
                     string before = block.text;
-                    block.text = Words.Clean(block.text);
+                    block.text = Words.Clean(block.text, language);
                     block.variations = null;   // (its cached copies with the parameters filled in)
                     if (block.text != before) cleaned++;
                 }
-                if (Plugin.LogLines.Value) Plugin.Log.LogInfo($"  {id}{(variant != null ? $" [{variant}]" : "")}: {block.text}");
+                if (Plugin.LogLines.Value) Plugin.Log.LogInfo($"  {id}{(variant != null ? $" [{variant}]" : "")}{(bad ? "" : " (text only)")}: {block.text}");
             }
 
+            // A line picked at random from several (a character's call for help) has the others to say instead of going quiet.
+            void Alternatives(TextBlocks.TextBlock[] lines)
+            {
+                var clean = lines.Where(b => b != null && !blocked.Contains(b)).ToList();
+                if (clean.Count == 0) return;
+                for (int i = 0; i < lines.Length; i++)
+                    if (lines[i] != null && blocked.Contains(lines[i])) alternatives[lines[i]] = clean[i % clean.Count];
+            }
+
+            alternatives.Clear();
             foreach (var entry in TextBlocks.strings)
             {
                 TextBlocks.TextBlockGroup group = entry.Value;
@@ -88,16 +111,32 @@ namespace NoBlasphemy
                     {
                         seen.Add(pair.Value);
                         for (int i = 0; i < pair.Value.Length; i++) if (pair.Value[i] != null) Consider(pair.Value[i], pair.Key, entry.Key, i);
+                        Alternatives(pair.Value);
                     }
                 if (group.blocks != null && !seen.Contains(group.blocks))
+                {
                     for (int i = 0; i < group.blocks.Length; i++) if (group.blocks[i] != null) Consider(group.blocks[i], null, entry.Key, i);
+                    Alternatives(group.blocks);
+                }
             }
             foreach (var pair in everyLineBlocked) if (pair.Value) mutedNames.Add(pair.Key);
             Testable.Clear();
             Testable.AddRange(found.Where(f => mutedNames.Contains(f.id)).OrderBy(f => f.id));
-            Plugin.Log.LogInfo($"No Blasphemy {Plugin.Version}: {blocked.Count} lines found, {cleaned} subtitles cleaned, " +
-                               (Plugin.MuteVoice.Value ? "their voice silenced" : "voice left on (MuteVoice = false)"));
+            Plugin.Log.LogInfo($"{Plugin.Title} {Plugin.Version}: {blocked.Count} lines found, {cleaned} subtitles cleaned, " +
+                               $"{(Plugin.SwapLines.Value ? alternatives.Count : 0)} swapped for another line when picked at random, " +
+                               (Plugin.MuteVoice.Value ? "otherwise silenced" : "voice left on (MuteVoice = false)"));
         }
+
+        // The line to say instead of one that uses the name, when there is one; otherwise the line itself.
+        public static TextBlocks.TextBlock Swap(TextBlocks.TextBlock block)
+        {
+            if (block == null || !Plugin.SwapLines.Value || !alternatives.TryGetValue(block, out TextBlocks.TextBlock other)) return block;
+            if (Plugin.LogLines.Value) Plugin.Log.LogInfo($"No Blasphemy: said another line instead of {block.uniqueID}");
+            return other;
+        }
+
+        private static readonly Dictionary<TextBlocks.TextBlock, TextBlocks.TextBlock> alternatives =
+            new Dictionary<TextBlocks.TextBlock, TextBlocks.TextBlock>();
 
         // The English text of every line, by ID and variant (the character in "vl_help [Glider]"), whatever language the game shows.
         private static Dictionary<string, string> ReadEnglish()
@@ -106,7 +145,7 @@ namespace NoBlasphemy
             TextAsset asset = Resources.Load<TextAsset>("TextBlocks");
             if (asset == null)
             {
-                Plugin.Log.LogWarning("No Blasphemy: the game's text table wasn't found; only English text is checked");
+                Plugin.Log.LogWarning("No Blasphemy: the game's text table wasn't found; only the shown language's text is checked");
                 return english;
             }
             try

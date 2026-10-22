@@ -1,10 +1,14 @@
 # Starts a new mod in mods\<Name>\ with everything a release needs: the project, a plugin, README, CHANGELOG, LICENSE and
 # store.json. Then: write it, add icon.png (256 x 256), build with .\scripts\build.ps1 -Mod <Name> -Deploy, and add it to the
-# table in the main README.
+# main README.
 #   .\scripts\new-mod.ps1 -Name RoachardRadio -Title "Roachard Radio" -Description "What it does, in the words players search for."
+#   (it becomes "Quad's Roachard Radio", package Quads_Roachard_Radio)
 param([Parameter(Mandatory)][string]$Name, [Parameter(Mandatory)][string]$Title, [string]$Description = "TODO: what it does")
 $ErrorActionPreference = "Stop"
 $root = Split-Path $PSScriptRoot -Parent
+# every mod is "Quad's <Title>", and its Thunderstore package Quads_<Title> (like the Valheim mods)
+$plainTitle = $Title -replace "^Quad'?s\s+", ""
+$Title = "Quad's $plainTitle"
 if ($Name -notmatch '^[A-Za-z][A-Za-z0-9]*$') { throw "-Name: letters and digits only, like RoachardRadio" }
 $dir = Join-Path $root "mods\$Name"
 if (Test-Path $dir) { throw "mods\$Name already exists" }
@@ -62,7 +66,7 @@ Write-File "CHANGELOG.md" @"
 
 Copy-Item (Join-Path $root "LICENSE.md") (Join-Path $dir "LICENSE.md")
 
-$storeName = ($Title -replace '[^A-Za-z0-9 ]', '').Trim() -replace '\s+', '_'
+$storeName = "Quads_" + (($plainTitle -replace '[^A-Za-z0-9 ]', '').Trim() -replace '\s+', '_')
 $store = [ordered]@{
     team = "Quads_Lab"; name = $storeName; description = $Description
     website = "https://github.com/HardHeadHackerHead/mycopunk-mods/tree/main/mods/$Name"
@@ -89,4 +93,4 @@ TODO: what it does, its keys and settings (``BepInEx\config\$guid.cfg``).
 
 $common
 "@
-"mods\$Name ready. Next: write it, add mods\$Name\icon.png (256 x 256), .\scripts\build.ps1 -Mod $Name -Deploy, and a row in README.md's table."
+"mods\$Name ready. Next: write it, add mods\$Name\icon.png (256 x 256), .\scripts\build.ps1 -Mod $Name -Deploy, and a card under 'The mods' in README.md."
