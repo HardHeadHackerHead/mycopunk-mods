@@ -3,5 +3,6 @@
        references are in ..\Directory.Build.props. -->
   <ItemGroup>
     <Reference Include="$(Managed)\AK.Wwise.Unity.API.dll" Private="false" />
+    <Reference Include="$(Managed)\Unity.InputSystem.dll" Private="false" />
   </ItemGroup>
 </Project>

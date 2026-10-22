@@ -20,6 +20,11 @@ namespace NoBlasphemy
         private static readonly Dictionary<string, float> durations = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
         private static Dictionary<uint, string> mutedIds;   // made on first use: Wwise has to be loaded to hash the names
 
+        // The lines the test key can play: those silenced by event (the ones a character shares with clean lines would play
+        // the other characters' voices when played outside their own conversation).
+        public static readonly List<(string group, int index, string variant, string id)> Testable =
+            new List<(string, int, string, string)>();
+
         public static bool IsMuted(TextBlocks.TextBlock block) => Plugin.MuteVoice.Value && block != null && blocked.Contains(block);
 
         public static bool IsMuted(string eventName) => Plugin.MuteVoice.Value && eventName != null && mutedNames.Contains(eventName);
@@ -51,7 +56,9 @@ namespace NoBlasphemy
             var everyLineBlocked = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
             int cleaned = 0;
 
-            void Consider(TextBlocks.TextBlock block, string variant)
+            var found = new List<(string group, int index, string variant, string id)>();
+
+            void Consider(TextBlocks.TextBlock block, string variant, string groupKey, int index)
             {
                 string id = block.uniqueID;
                 if (!english.TryGetValue(Key(id, variant), out string en) && !english.TryGetValue(Key(id, null), out en))
@@ -60,6 +67,7 @@ namespace NoBlasphemy
                 everyLineBlocked[id] = (!everyLineBlocked.TryGetValue(id, out bool all) || all) && bad;
                 if (!bad) return;
                 blocked.Add(block);
+                found.Add((groupKey, index, variant, id));
                 durations[id] = Mathf.Clamp(1f + (en ?? block.text).Length * 0.055f, 2f, 12f);
                 if (cleanText)
                 {
@@ -71,19 +79,22 @@ namespace NoBlasphemy
                 if (Plugin.LogLines.Value) Plugin.Log.LogInfo($"  {id}{(variant != null ? $" [{variant}]" : "")}: {block.text}");
             }
 
-            foreach (TextBlocks.TextBlockGroup group in TextBlocks.strings.Values)
+            foreach (var entry in TextBlocks.strings)
             {
+                TextBlocks.TextBlockGroup group = entry.Value;
                 var seen = new HashSet<TextBlocks.TextBlock[]>();
                 if (group.variations != null)
                     foreach (var pair in group.variations)
                     {
                         seen.Add(pair.Value);
-                        foreach (var block in pair.Value) if (block != null) Consider(block, pair.Key);
+                        for (int i = 0; i < pair.Value.Length; i++) if (pair.Value[i] != null) Consider(pair.Value[i], pair.Key, entry.Key, i);
                     }
                 if (group.blocks != null && !seen.Contains(group.blocks))
-                    foreach (var block in group.blocks) if (block != null) Consider(block, null);
+                    for (int i = 0; i < group.blocks.Length; i++) if (group.blocks[i] != null) Consider(group.blocks[i], null, entry.Key, i);
             }
             foreach (var pair in everyLineBlocked) if (pair.Value) mutedNames.Add(pair.Key);
+            Testable.Clear();
+            Testable.AddRange(found.Where(f => mutedNames.Contains(f.id)).OrderBy(f => f.id));
             Plugin.Log.LogInfo($"No Blasphemy {Plugin.Version}: {blocked.Count} lines found, {cleaned} subtitles cleaned, " +
                                (Plugin.MuteVoice.Value ? "their voice silenced" : "voice left on (MuteVoice = false)"));
         }

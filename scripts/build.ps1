@@ -24,5 +24,9 @@ foreach ($proj in $projects) {
         throw "build failed: $($proj.Name)"
     }
     "built $($proj.BaseName)$(if ($Deploy) { ' (deployed)' })"
+    $twice = Join-Path $GameDir "BepInEx\plugins\$($proj.BaseName)\$($proj.BaseName).dll"
+    if ($Deploy -and (Test-Path (Join-Path $GameDir "BepInEx\scripts\$($proj.BaseName).dll")) -and (Test-Path $twice)) {
+        Write-Warning "$($proj.BaseName) is in both BepInEx\scripts and BepInEx\plugins: it would load twice. Delete $twice (with the game closed)."
+    }
 }
 "build ok"

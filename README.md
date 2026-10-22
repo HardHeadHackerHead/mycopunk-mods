@@ -1,70 +1,102 @@
 <div align="center">
 
-<img src="mods/NoBlasphemy/icon.png" alt="No Blasphemy: a speech bubble with a halo" width="160">
+# 🍄 Mycopunk Mods
 
-### Mods for Mycopunk, by Quads Lab.
+**Mods for Mycopunk, the co-op shooter by Pigeons at Play.**
+Clean up the dialogue, and more to come.
 
-[![Join us on Discord](https://img.shields.io/badge/Join_us_on-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/EwTjQxEZPy)  [![Buy me a coffee](https://img.shields.io/badge/Buy_me_a-coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/quadh)
+![Mycopunk](https://img.shields.io/badge/Mycopunk-BepInEx-3b6e8f?style=flat-square)
+![C#](https://img.shields.io/badge/made%20with-C%23-68217a?style=flat-square)
+[![License: source-available](https://img.shields.io/badge/license-source--available-orange?style=flat-square)](LICENSE.md)
+[![Thunderstore](https://img.shields.io/badge/get%20them%20on-Thunderstore-23272a?style=flat-square)](https://thunderstore.io/c/mycopunk/)
+[![Join us on Discord](https://img.shields.io/badge/Discord-join%20us-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/EwTjQxEZPy)
+[![Buy me a coffee](https://img.shields.io/badge/buy%20me%20a-coffee-FFDD00?style=flat-square&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/quadh)
 
 </div>
 
-My public mods for [Mycopunk](https://store.steampowered.com/app/3247750/Mycopunk/), the co-op shooter by Pigeons at Play.
+---
 
 > **Unofficial fan mods.** Not affiliated with or endorsed by Pigeons at Play.
 
-## The mods
+## 🚀 Install
 
-| Mod | What it does | Needs |
-|---|---|---|
-| [**No Blasphemy**](mods/NoBlasphemy) | Takes God's name used in vain out of the dialogue: the subtitles are cleaned, and those spoken lines go quiet. Respectful lines stay. | Nothing else. Client only: only you need it |
+### Option 1: a mod manager, easiest
 
-Each mod's page has its settings and changelog.
+With **r2modman** or **Gale**, find the mod under Mycopunk on [Thunderstore](https://thunderstore.io/c/mycopunk/) and install
+it. It brings BepInEx with it.
 
-## Install
+### Option 2: by hand
 
-The easiest way is a mod manager, **r2modman** or **Gale** ([Thunderstore](https://thunderstore.io/c/mycopunk/)): install
-the mod and it brings BepInEx with it.
+1. **BepInEx:** install [BepInExPack for Mycopunk](https://thunderstore.io/c/mycopunk/p/BepInEx/BepInExPack_Mycopunk/): copy the
+   contents of its `BepInExPack_Mycopunk` folder into your Mycopunk folder (next to `Mycopunk.exe`).
+2. **The mod:** download its zip from the [releases](https://github.com/HardHeadHackerHead/mycopunk-mods/releases) and unzip it into
+   `BepInEx\plugins\`, so you get `BepInEx\plugins\<Mod>\<Mod>.dll`.
+3. Start Mycopunk. `BepInEx\LogOutput.log` shows each mod loading, and its settings are in `BepInEx\config\`.
 
-By hand:
+### Option 3: reload mods without restarting (for testing and making mods)
 
-1. Install [BepInExPack for Mycopunk](https://thunderstore.io/c/mycopunk/p/BepInEx/BepInExPack_Mycopunk/) in the game folder.
-2. Download the mod's zip from the [releases](https://github.com/HardHeadHackerHead/mycopunk-mods/releases) and unzip it
-   into the game's `BepInEx\plugins\` folder, so you get `BepInEx\plugins\<Mod>\<Mod>.dll`.
+Add **ScriptEngine** to BepInEx and mods load from `BepInEx\scripts`, where a new build reloads in the running game:
 
-Settings are in `BepInEx\config\` after the first start.
+1. From [BepInEx.Debug releases](https://github.com/BepInEx/BepInEx.Debug/releases) download `ScriptEngine_*.zip` and copy its
+   `BepInEx` folder over yours, so you have `BepInEx\plugins\ScriptEngine.dll`. Create the folder `BepInEx\scripts`.
+2. In `BepInEx\config\com.bepis.bepinex.scriptengine.cfg` (start the game once if it isn't there yet) set `LoadOnStart = true`
+   under `[General]`, and `EnableFileSystemWatcher = true` under `[AutoReload]` to reload whenever a file there changes.
+3. Put each mod's `.dll` (and `.pdb`) straight into `BepInEx\scripts`. **F6** reloads them by hand. A mod goes in `scripts` or in
+   `plugins`, never both.
 
-## Building
+### Removing
+
+- **One mod:** delete its DLL (from `BepInEx\plugins\<Mod>\` or `BepInEx\scripts`).
+- **Everything:** delete `BepInEx`, `winhttp.dll`, `doorstop_config.ini` and `.doorstop_version` from the Mycopunk folder. Steam's
+  *Verify integrity of game files* doesn't remove them.
+
+## 🧰 The mods
+
+### 🙏 No Blasphemy
+<img src="mods/NoBlasphemy/icon.png" alt="No Blasphemy" width="200">
+
+Takes **God's name used in vain** out of the dialogue. The subtitles are cleaned ("oh my gosh", "thank goodness"), and those spoken
+lines go quiet, since a recording can't lose just one word. Lines that speak of God with respect stay, and the milder swearing is
+left alone. Only you need it: it changes only what you hear and read.
+
+**[More: how it works and settings →](mods/NoBlasphemy/README.md)**
+
+## 🧑‍💻 For developers
 
 You need the .NET SDK and the game. BepInEx and HarmonyX come from NuGet, so nothing has to be installed in the game to build.
 
 ```powershell
-.\scripts\build.ps1                                   # builds every mod in mods\
-.\scripts\build.ps1 -Mod NoBlasphemy -Deploy          # ...one mod, copied into the game's BepInEx\plugins\<Name>\
-.\scripts\build.ps1 -Deploy -PluginsDir "<profile>\BepInEx\plugins"    # ...or into a mod manager profile
+.\scripts\build.ps1                                   # build every mod in mods\
+.\scripts\build.ps1 -Mod NoBlasphemy -Deploy          # one mod, copied into the game: BepInEx\scripts with ScriptEngine
+                                                      # (it reloads in the running game), else BepInEx\plugins\<Name>\
 .\scripts\package.ps1                                 # manual-install zips in build\, for a GitHub release
 python scripts\store.py NoBlasphemy                   # the Thunderstore package in build\store\, checked
-.\scripts\new-mod.ps1 -Name MyMod -Title "My Mod"     # starts a new mod in mods\MyMod\
+.\scripts\new-mod.ps1 -Name MyMod -Title "My Mod"     # start a new mod in mods\MyMod\
 ```
 
-The game folder defaults to `D:\SteamLibrary\steamapps\common\Mycopunk`; pass `-GameDir` (or set `MYCO_GAMEDIR`) for
-yours. Shared build settings are in `mods\Directory.Build.props`, so a mod's own `.csproj` is a few lines.
+- The game folder defaults to `D:\SteamLibrary\steamapps\common\Mycopunk`; pass `-GameDir` (or set `MYCO_GAMEDIR`) for yours.
+  `-PluginsDir` deploys somewhere else, such as a mod manager profile's `BepInEx\plugins`.
+- Each mod is a folder under `mods/` with its own `.csproj`, `Plugin.cs`, `README.md` (its page, linked from its card above),
+  `CHANGELOG.md`, `LICENSE.md`, `store.json` (its Thunderstore listing) and `icon.png` (256 x 256). Shared build settings are in
+  `mods/Directory.Build.props`, so a mod's own `.csproj` is a few lines.
+- Bump the `Version` constant in `Plugin.cs` for every change people should get, with a line in `CHANGELOG.md`.
+- A mod has to survive a ScriptEngine reload: undo its Harmony patches and destroy what it made in `OnDestroy`.
+- Release: `python scripts\store.py <Mod>`, test that zip, then `--publish`.
 
-## License
+## 📄 License
 
-**Source-available, not open source**: see [LICENSE.md](LICENSE.md) (each mod carries a copy). You may read the code, play,
-build it for yourself, contribute, and share the official releases unmodified and free. You may not release modified
-versions, copy the code into your own, or sell it, without written permission.
+**Source-available, not open source**: see [LICENSE.md](LICENSE.md) (each mod carries a copy). You may read the code, play, build it
+for yourself, contribute, and share the official releases unmodified and free. You may not release modified versions, copy the code
+into your own, or sell it, without written permission. Mods run inside your game with full access to your PC, so only install code
+you trust.
+
+**Mycopunk** and all its content belong to [Pigeons at Play](https://store.steampowered.com/app/3247750/Mycopunk/). BepInEx and
+HarmonyX belong to their respective authors.
 
 ## 🤖 Made with AI
 
-Made with the help of Claude (Anthropic), with Claude Code: designed, written and checked together, and tried in the game.
-
-## Credits
-
-- **Mycopunk** by [Pigeons at Play](https://store.steampowered.com/app/3247750/Mycopunk/). All game content, names and
-  artwork belong to them.
-- BepInEx and HarmonyX by their respective authors.
-- Made with the help of Claude (Anthropic).
+Made with the help of Claude (Anthropic), with Claude Code: designed, written and checked together, and tried in the game. The
+Discord and support banners are AI-generated.
 
 ## 💬 Join us on Discord
 

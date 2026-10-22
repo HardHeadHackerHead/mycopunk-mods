@@ -1,4 +1,8 @@
-# No Blasphemy
+# 🙏 No Blasphemy
+
+<img src="icon.png" alt="No Blasphemy" width="200">
+
+**Clean dialogue for Mycopunk: takes God's name used in vain out of what the characters say. The subtitles are cleaned, and those spoken lines go quiet. Lines that speak of God with respect stay.**
 
 ![version: 1.0.0](https://img.shields.io/badge/version-1.0.0-3b6e8f?style=flat-square)  ![multiplayer: only you](https://img.shields.io/badge/multiplayer-only%20you-7a5c2e?style=flat-square)  ![made with: Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-c26a3d?style=flat-square)
 
@@ -6,46 +10,55 @@
 
 [![Join us on Discord](https://img.shields.io/badge/Join_us_on-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/EwTjQxEZPy)  [![Buy me a coffee](https://img.shields.io/badge/Buy_me_a-coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/quadh)
 
-Takes **God's name used in vain** out of Mycopunk's dialogue. The crew, Roachard, Hunk and the rest stop using the Lord's
-name as a curse or an exclamation, in what you hear and in what you read.
+<!-- GITHUB-ONLY -->**Install:** see [Install](../../README.md#-install) on the main page: BepInEx, then this mod's DLL in `BepInEx\plugins` (or `BepInEx\scripts` with ScriptEngine).<!-- END GITHUB-ONLY -->
 
-- **Subtitles are cleaned.** The name becomes a harmless word: "oh my G--!" reads "oh my gosh!", "thank G--" reads
-  "thank goodness", and the G-- d--- curse reads "dang".
-- **Those spoken lines go quiet.** A recording can't lose a single word, so a line that uses the name is silenced and only
-  its cleaned subtitle shows. Conversations and mission chatter carry on as normal around it.
+## ✨ Features
+
+The crew, Roachard, Hunk and the rest stop using the Lord's name as a curse or an exclamation, in what you hear and in what you read.
+
+### How it works
+
+- **Subtitles are cleaned.** The name becomes a harmless word: "oh my G--!" reads "oh my gosh!", "thank G--" reads "thank goodness", and the G-- d--- curse reads "dang".
+- **Those spoken lines go quiet.** A recording can't lose a single word, so a line that uses the name is silenced and only its cleaned subtitle shows. Conversations and mission chatter carry on around it at the normal pace.
 - **Respectful lines stay.** When a character speaks of God sincerely (the Wrangler's line about faith), it's left as it is.
+- **New dialogue is covered too.** The mod finds the lines by their words, so lines added by game updates are caught. Right now that's 21 lines across the crew, mission control and the side characters.
+- **Only God's name.** The milder swearing is left alone.
 
-It finds the lines by their words, so new dialogue from game updates is covered too. Right now that's 21 lines across the
-crew, mission control and the side characters. Other rough language (the milder swearing) is left alone: this mod is only
-about God's name.
+## 👥 Multiplayer
 
-**Multiplayer:** client only. It changes only what you hear and read, so only you need it, and you can play with anyone.
+**Who needs it:** Only you. It changes only what you hear and read, so you can play with anyone, with or without it.
 
-## Settings
+## 🌍 Languages
 
-In `BepInEx\config\quadslab.mycopunk.noblasphemy.cfg` (or your mod manager's config editor), after the first start:
+The voice lines are silenced whatever language the game is in. The subtitles are rewritten in **English**; in other languages the translated subtitle shows as the game has it.
+
+## ⚙️ Settings
+
+In `BepInEx\config\quadslab.mycopunk.noblasphemy.cfg`, made the first time the game runs with the mod. r2modman and Gale edit it under **Config editor**.
+
+**General**
 
 | Setting | Default | What it does |
 |---|---|---|
-| `General / MuteVoice` | `true` | Silence the spoken lines. Off: you'd still hear them, with clean subtitles. |
-| `General / CleanSubtitles` | `true` | Clean the subtitles (English). |
-| `Lines / Keep` | `exch_faith_5` | Line IDs to leave alone, comma-separated. |
-| `Lines / Extra` | (empty) | More line IDs to clean and silence, for a line the word list misses. |
-| `Debug / LogLines` | `false` | Write each changed line, with its ID, to `BepInEx\LogOutput.log`. |
+| `MuteVoice` | `true` | Silence the spoken lines. Off: you'd still hear them, with clean subtitles. |
+| `CleanSubtitles` | `true` | Clean the subtitles (English). |
 
-Subtitles in other languages: the voice lines are still silenced, but only the English text is rewritten.
+**Lines**
+
+| Setting | Default | What it does |
+|---|---|---|
+| `Keep` | `exch_faith_5` | Line IDs to leave alone, comma-separated. |
+| `Extra` | (empty) | More line IDs to clean and silence, for a line the word list misses. |
+
+**Debug**
+
+| Setting | Default | What it does |
+|---|---|---|
+| `LogLines` | `false` | Write each changed line, with its ID, to `BepInEx\LogOutput.log`, and each line as it's silenced. |
+| `TestKey` | `false` | **F8** in a game plays the next changed line, as mission control would say it: you see its cleaned subtitle and hear nothing. |
 
 Heard one we missed? [Tell us](https://github.com/HardHeadHackerHead/mycopunk-mods/issues/new?template=bug.yml&title=%5BNo%20Blasphemy%5D%20)
 which character said it and roughly when, and we'll add it.
-
-<!-- GITHUB-ONLY -->
-## Install
-
-With a mod manager (**r2modman** or **Gale**): find **No Blasphemy** under Mycopunk and install it; it brings BepInEx with it.
-
-By hand: install [BepInExPack for Mycopunk](https://thunderstore.io/c/mycopunk/p/BepInEx/BepInExPack_Mycopunk/), then
-unzip the release zip into the game's `BepInEx\plugins\` folder, so you get `BepInEx\plugins\NoBlasphemy\NoBlasphemy.dll`.
-<!-- END GITHUB-ONLY -->
 
 ## 🤖 Made with AI
 

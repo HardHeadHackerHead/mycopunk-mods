@@ -4,7 +4,9 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using Pigeon.Movement;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace NoBlasphemy
 {
@@ -23,6 +25,7 @@ namespace NoBlasphemy
         internal static ConfigEntry<string> KeepLines;
         internal static ConfigEntry<string> ExtraLines;
         internal static ConfigEntry<bool> LogLines;
+        internal static ConfigEntry<bool> TestKey;
 
         private void Awake()
         {
@@ -37,15 +40,29 @@ namespace NoBlasphemy
                 "More line IDs to clean and silence, comma-separated, for any line the word list misses. Takes effect at the next start.");
             LogLines = Config.Bind("Debug", "LogLines", false,
                 "Write every line changed (at start) and every line silenced (as it plays) to the BepInEx log, with its ID.");
+            TestKey = Config.Bind("Debug", "TestKey", false,
+                "F8 in a game plays the next line this mod changes, as mission control would say it: you see its cleaned subtitle and hear nothing.");
 
-            var runner = new GameObject("NoBlasphemy");
+            runner = new GameObject("NoBlasphemy");
             DontDestroyOnLoad(runner);
             runner.hideFlags = HideFlags.HideAndDontSave;
             runner.AddComponent<Later>();
 
-            new Harmony(Guid).PatchAll(typeof(Plugin).Assembly);
-            // The game reads its text before or after the plugins load, depending on the loader: catch both.
+            harmony = new Harmony(Guid);
+            harmony.PatchAll(typeof(Plugin).Assembly);
+            // The game reads its text before or after the plugins load, depending on the loader: catch both. (A reload
+            // finds the lines again from the game's own English text, so already-cleaned subtitles don't hide them.)
             if (TextBlocks.strings.Count > 0) Filter.Apply();
+        }
+
+        private GameObject runner;
+        private Harmony harmony;
+
+        // ScriptEngine (BepInEx\scripts) reloads a mod by destroying it and loading the new build: leave nothing behind.
+        private void OnDestroy()
+        {
+            harmony?.UnpatchSelf();
+            if (runner != null) Destroy(runner);
         }
     }
 
@@ -60,8 +77,11 @@ namespace NoBlasphemy
             if (callback != null) pending.Add((Time.unscaledTime + delay, callback, cookie));
         }
 
+        private int nextTest;
+
         private void Update()
         {
+            if (Plugin.TestKey.Value && Keyboard.current != null && Keyboard.current.f8Key.wasPressedThisFrame) PlayTest();
             for (int i = pending.Count - 1; i >= 0; i--)
             {
                 if (Time.unscaledTime < pending[i].at) continue;
@@ -70,6 +90,19 @@ namespace NoBlasphemy
                 try { callback(cookie, AkCallbackType.AK_EndOfEvent, null); }
                 catch (Exception e) { Plugin.Log.LogWarning("No Blasphemy: a line's finish callback failed: " + e.Message); }
             }
+        }
+
+        private void PlayTest()
+        {
+            if (Filter.Testable.Count == 0 || Highlighter.Instance == null || PlayerLook.Instance == null)
+            {
+                Plugin.Log.LogInfo("No Blasphemy: the test key works once you're in the game");
+                return;
+            }
+            var (group, index, variant, id) = Filter.Testable[nextTest++ % Filter.Testable.Count];
+            Plugin.Log.LogInfo($"No Blasphemy: test {nextTest}/{Filter.Testable.Count}: {id}");
+            try { Highlighter.Instance.PlayMissionControlVoiceline(new Voiceline(group, 1000), variantKey: variant, variantIndex: index); }
+            catch (Exception e) { Plugin.Log.LogWarning("No Blasphemy: the test line didn't play: " + e.Message); }
         }
     }
 }

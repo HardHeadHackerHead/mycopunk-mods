@@ -15,9 +15,12 @@
     <GameDir Condition="'$(GameDir)' == '' and '$(MYCO_GAMEDIR)' != ''">$(MYCO_GAMEDIR)</GameDir>
     <GameDir Condition="'$(GameDir)' == ''">D:\SteamLibrary\steamapps\common\Mycopunk</GameDir>
     <Managed>$(GameDir)\Mycopunk_Data\Managed</Managed>
-    <!-- where -Deploy copies the mod: the game's BepInEx\plugins by default, or a mod manager profile's (PluginsDir) -->
+    <!-- where -Deploy copies the mod. With ScriptEngine installed: straight into BepInEx\scripts (with its .pdb), where
+         it reloads in the running game. Without it: BepInEx\plugins\<Name>\ (a restart to load). PluginsDir overrides. -->
+    <PluginsDir Condition="'$(PluginsDir)' == '' and Exists('$(GameDir)\BepInEx\plugins\ScriptEngine.dll')">$(GameDir)\BepInEx\scripts</PluginsDir>
     <PluginsDir Condition="'$(PluginsDir)' == ''">$(GameDir)\BepInEx\plugins</PluginsDir>
-    <PluginOut>$(PluginsDir)\$(MSBuildProjectName)</PluginOut>
+    <PluginOut Condition="$(PluginsDir.EndsWith('scripts'))">$(PluginsDir)</PluginOut>
+    <PluginOut Condition="'$(PluginOut)' == ''">$(PluginsDir)\$(MSBuildProjectName)</PluginOut>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,6 +49,7 @@
   <!-- Only into a game or profile folder for tests (scripts\build.ps1 -Deploy) -->
   <Target Name="DeployMod" AfterTargets="Build" Condition="'$(DeployMods)' == 'true'">
     <MakeDir Directories="$(PluginOut)" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(PluginOut)" />
+    <Copy SourceFiles="$(TargetPath);$(TargetDir)$(TargetName).pdb" DestinationFolder="$(PluginOut)" />
+    <Message Importance="high" Text="$(MSBuildProjectName) -> $(PluginOut)" />
   </Target>
 </Project>

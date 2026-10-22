@@ -38,13 +38,18 @@ namespace $Name
         public const string Version = "0.1.0";
 
         internal static ManualLogSource Log;
+        private Harmony harmony;
 
         private void Awake()
         {
             Log = Logger;
-            new Harmony(Guid).PatchAll(typeof(Plugin).Assembly);
+            harmony = new Harmony(Guid);
+            harmony.PatchAll(typeof(Plugin).Assembly);
             Log.LogInfo("$Title " + Version + " loaded");
         }
+
+        // ScriptEngine (BepInEx\scripts) reloads a mod by destroying it and loading the new build: leave nothing behind.
+        private void OnDestroy() => harmony?.UnpatchSelf();
     }
 }
 "@
