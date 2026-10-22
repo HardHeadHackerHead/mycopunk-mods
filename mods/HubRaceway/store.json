@@ -14,8 +14,8 @@
     "thunderstore": {
         "community": "mycopunk",
         "categories": [
-            "client",
-            "mods"
+            "mods",
+            "gameplay"
         ]
     }
 }
