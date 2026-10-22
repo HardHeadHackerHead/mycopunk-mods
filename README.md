@@ -62,6 +62,14 @@ it: it changes only what you hear and read.
 
 **[More: how it works and settings →](mods/NoBlasphemy/README.md)**
 
+### 🔍 Quad's Upgrade Cost Preview
+<img src="mods/UpgradeCostPreview/cover.png" alt="Quad's Upgrade Cost Preview" width="100%">
+
+See what an upgrade costs before you spend it. In the Gear screen the turbocharge (boost) cost shows as soon as you point at an
+upgrade, not only once you start holding the key, and every cost shows against how much you have: **300 / 1186**. Only you need it.
+
+**[More: how it works, settings and a screenshot →](mods/UpgradeCostPreview/README.md)**
+
 ## 🧑‍💻 For developers
 
 You need the .NET SDK and the game. BepInEx and HarmonyX come from NuGet, so nothing has to be installed in the game to build.

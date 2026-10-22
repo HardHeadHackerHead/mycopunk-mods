@@ -76,8 +76,9 @@ $store = [ordered]@{
 }
 Write-File "store.json" (($store | ConvertTo-Json -Depth 5) + "`n")
 
-$readme = Get-Content (Join-Path $root "mods\NoBlasphemy\README.md") -Raw
-$common = $readme.Substring($readme.IndexOf("## 🤖 Made with AI"))
+$dot = [char]0x00B7   # (the link separator, written as a code: this script is read as ANSI by Windows PowerShell)
+$readme = Get-Content (Join-Path $root "mods\NoBlasphemy\README.md") -Raw -Encoding UTF8   # (Windows PowerShell reads ANSI otherwise: the emoji would be garbled)
+$common = $readme.Substring($readme.LastIndexOf("## ", $readme.IndexOf("Made with AI")))   # (from the "Made with AI" heading on)
 $common = $common -replace "(?s)<!-- RECENT-CHANGES -->.*?<!-- END RECENT-CHANGES -->", "<!-- RECENT-CHANGES -->`n- **0.1.0** First release.`n<!-- END RECENT-CHANGES -->"
 $titleUrl = [uri]::EscapeDataString($Title)
 Write-File "README.md" @"
@@ -85,7 +86,7 @@ Write-File "README.md" @"
 
 ![version: 0.1.0](https://img.shields.io/badge/version-0.1.0-3b6e8f?style=flat-square)  ![made with: Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-c26a3d?style=flat-square)
 
-[Source code](https://github.com/HardHeadHackerHead/mycopunk-mods/tree/main/mods/$Name)  ·  [Report a bug](https://github.com/HardHeadHackerHead/mycopunk-mods/issues/new?template=bug.yml&title=%5B$titleUrl%5D%20)  ·  [Discord](https://discord.gg/EwTjQxEZPy)
+[Source code](https://github.com/HardHeadHackerHead/mycopunk-mods/tree/main/mods/$Name)  $dot  [Report a bug](https://github.com/HardHeadHackerHead/mycopunk-mods/issues/new?template=bug.yml&title=%5B$titleUrl%5D%20)  $dot  [Discord](https://discord.gg/EwTjQxEZPy)
 
 [![Join us on Discord](https://img.shields.io/badge/Join_us_on-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/EwTjQxEZPy)  [![Buy me a coffee](https://img.shields.io/badge/Buy_me_a-coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/quadh)
 

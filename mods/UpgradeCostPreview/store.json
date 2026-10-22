@@ -1,0 +1,21 @@
+{
+  "team": "Quads_Lab",
+  "name": "Quads_Upgrade_Cost_Preview",
+  "description": "Upgrade cost preview: see what turbocharging an upgrade costs before you hold the key, and every cost against how much you have (40 / 125). Quality of life, UI, client only.",
+  "website": "https://github.com/HardHeadHackerHead/mycopunk-mods/tree/main/mods/UpgradeCostPreview",
+  "dependencies": [
+    "BepInEx-BepInExPack_Mycopunk-5.4.2403"
+  ],
+  "files": [
+    "mods/UpgradeCostPreview/bin/Release/netstandard2.1/UpgradeCostPreview.dll"
+  ],
+  "plugin_folder": "UpgradeCostPreview",
+  "icon": "mods/UpgradeCostPreview/icon.png",
+  "thunderstore": {
+    "community": "mycopunk",
+    "categories": [
+      "client",
+      "qol"
+    ]
+  }
+}
