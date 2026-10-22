@@ -1,5 +1,7 @@
 # 📸 Quad's Highlight Reel
 
+<img src="cover.png" alt="Quad's Highlight Reel" width="100%">
+
 **Your best moments, caught for you: boss kills, multi-kills, close calls and comebacks are photographed as they happen and shown as a highlight reel on the mission reward screen. Point at one to see it big. They're saved to your Pictures folder too.**
 
 ![version: 0.1.0](https://img.shields.io/badge/version-0.1.0-3b6e8f?style=flat-square)  ![multiplayer: only you](https://img.shields.io/badge/multiplayer-only%20you-7a5c2e?style=flat-square)  ![made with: Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-c26a3d?style=flat-square)

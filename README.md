@@ -79,6 +79,7 @@ second mission on, a panel adds up all your missions this session: resources, up
 **[More: how it works, settings and a screenshot →](mods/MissionHaul/README.md)**
 
 ### 📸 Quad's Highlight Reel
+<img src="mods/HighlightReel/cover.png" alt="Quad's Highlight Reel" width="100%">
 
 Your best moments, caught for you. Boss kills, multi-kills, close calls and comebacks are photographed as they happen and shown as
 a **highlight reel** on the mission reward screen; point at one to see it big. They're saved to your Pictures folder too. Only you
