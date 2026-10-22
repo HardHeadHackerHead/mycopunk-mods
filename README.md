@@ -53,7 +53,7 @@ Add **ScriptEngine** to BepInEx and mods load from `BepInEx\scripts`, where a ne
 ## 🧰 The mods
 
 ### 🙏 Quad's No Blasphemy
-<img src="mods/NoBlasphemy/icon.png" alt="Quad's No Blasphemy" width="200">
+<img src="mods/NoBlasphemy/cover.png" alt="Quad's No Blasphemy" width="100%">
 
 Takes **God's name used in vain** out of the dialogue, in all ten of the game's languages. The subtitles are cleaned ("oh my gosh",
 "thank goodness"). Since a recording can't lose just one word, those spoken lines are swapped for a clean line meant for the same
@@ -99,7 +99,7 @@ HarmonyX belong to their respective authors.
 ## 🤖 Made with AI
 
 Made with the help of Claude (Anthropic), with Claude Code: designed, written and checked together, and tried in the game. The
-Discord and support banners and the mod icons are AI-generated (their originals and prompts are in `docs/artwork/`).
+Discord and support banners and the mod covers and icons are AI-generated (their originals and prompts are in `docs/artwork/`).
 
 ## 💬 Join us on Discord
 

@@ -1,6 +1,6 @@
 # 🙏 Quad's No Blasphemy
 
-<img src="icon.png" alt="Quad's No Blasphemy" width="200">
+<img src="cover.png" alt="Quad's No Blasphemy" width="100%">
 
 **Clean dialogue for Mycopunk: takes God's name used in vain out of what the characters say, in every language. The subtitles are cleaned, and those spoken lines are swapped for clean ones or go quiet. Lines that speak of God with respect stay.**
 
@@ -65,7 +65,7 @@ which character said it and roughly when, and we'll add it.
 
 ## 🤖 Made with AI
 
-Made with the help of Claude (Anthropic), with Claude Code: designed, written and checked together, and tried in the game. Its icon was made with AI image generation.
+Made with the help of Claude (Anthropic), with Claude Code: designed, written and checked together, and tried in the game. Its cover and icon were made with AI image generation.
 
 ## 💬 Join us on Discord
 
