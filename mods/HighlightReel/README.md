@@ -2,7 +2,7 @@
 
 <img src="cover.png" alt="Quad's Highlight Reel" width="100%">
 
-**Your best moments, caught for you: boss kills, melee kills, multi-kills, close calls and comebacks are photographed as they happen and shown as a highlight reel on the mission reward screen. Point at one to see it big. They're saved to your Pictures folder too.**
+**Your best moments, caught for you: boss kills, melee kills, multi-kills, close calls and comebacks are photographed as they happen and shown as a highlight reel when the mission's over. Point at one to see it big. They're saved to your Pictures folder too.**
 
 ![version: 0.1.0](https://img.shields.io/badge/version-0.1.0-3b6e8f?style=flat-square)  ![multiplayer: only you](https://img.shields.io/badge/multiplayer-only%20you-7a5c2e?style=flat-square)  ![made with: Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-c26a3d?style=flat-square)
 
@@ -29,19 +29,19 @@ You don't have to remember to take screenshots: the mod watches for the moments 
 
 ### How it works
 
-- **On the reward screen.** After the mission, a **HIGHLIGHTS** column between your XP and your rewards shows the mission's pictures in the order they happened, each framed in its colour: gold for bosses, orange for melee kills, cyan for multi-kills and close calls. However much XP or loot the mission gave, it stays clear of them.
+- **When the mission's over.** After a successful mission, the awards screen that follows the rewards (your "Deadliest" card and the like) shows a **HIGHLIGHTS** row of big pictures across the top, in the order they happened, each framed in its colour: gold for bosses, orange for melee kills, cyan for multi-kills and close calls. After a failed or aborted mission there's no awards screen, so they show on the reward screen, between your XP and your rewards.
 - **Point at one to see it big.** It opens over the middle of the screen, with its caption, until you point away.
-- **Saved for you.** When the reward screen opens, the reel is saved as PNGs in your **Pictures** folder, under **Mycopunk Highlights** (or a folder of your own, or not at all: see the settings).
+- **Saved for you.** When the mission's reward screen opens, the reel is saved as PNGs in your **Pictures** folder, under **Mycopunk Highlights** (or a folder of your own, or not at all: see the settings).
 - **A mix of the best six.** A mission keeps up to six: every boss, at most two multi-kills and two melee kills, one close call and one comeback. A new mission starts a new reel.
 - **No stutter.** The pictures are taken on the graphics card and saved in the background, so play doesn't hitch.
 
 ## 📸 Screenshots
 
-**The reward screen's highlight reel, between your XP and your rewards** (from the mod's test, in the hub: in a mission, they're your fights)
+**After a mission: the highlight reel on the awards screen** (real pictures from a Population Control run)
 
-<img src="images/1.jpg" alt="The reward screen with a HIGHLIGHTS column between XP and Rewards: BOSS DOWN: TEST, QUAD KILL, CLOSE CALL, MELEE KILL" width="100%">
+<img src="images/1.jpg" alt="The awards screen with a HIGHLIGHTS row above the Deadliest card: QUAD KILL, RAMPAGE ×13, MELEE KILL" width="100%">
 
-**Pointing at one shows it big**
+**Pointing at one shows it big: here, a melee kill through a wall of fire**
 
 <img src="images/2.jpg" alt="A highlight shown big over the reward screen, captioned MELEE KILL" width="100%">
 
@@ -84,7 +84,7 @@ A moment it should have caught, or one it shouldn't have? [Tell us](https://gith
 
 ## 🤖 Made with AI
 
-Made with the help of Claude (Anthropic), with Claude Code: designed, written and checked together, and tried in the game. Its cover and icon were made with AI image generation; the screenshots are from the game (the mod's test, in the hub).
+Made with the help of Claude (Anthropic), with Claude Code: designed, written and checked together, and tried in the game. Its cover and icon were made with AI image generation; the screenshots are from the game.
 
 ## 💬 Join us on Discord
 
@@ -124,7 +124,7 @@ helps me make new mods and keep improving the ones you already play. It's 100% o
 ## 📜 Recent changes
 
 <!-- RECENT-CHANGES -->
-- **0.1.0** First release: pictures of your best moments (bosses, melee kills, multi-kills, close calls, revives) on the mission reward screen, big when you point at them, and saved to your Pictures folder.
+- **0.1.0** First release: pictures of your best moments (bosses, melee kills, multi-kills, close calls, revives) when the mission's over, big when you point at them, and saved to your Pictures folder.
 <!-- END RECENT-CHANGES -->
 
 [Every change](CHANGELOG.md)

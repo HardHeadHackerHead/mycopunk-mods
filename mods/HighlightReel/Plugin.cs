@@ -112,13 +112,18 @@ namespace HighlightReel
             }
             Reel.Testing = true;
             Reel.Clear();
-            Reel.Capture(Kind.Boss, "BOSS DOWN: TEST", 100, 0f);
-            yield return new WaitForSecondsRealtime(0.4f);
-            Reel.Capture(Kind.MultiKill, "QUAD KILL", 44, 0f);
-            yield return new WaitForSecondsRealtime(0.4f);
-            Reel.Capture(Kind.CloseCall, "CLOSE CALL", 50, 0f);
-            yield return new WaitForSecondsRealtime(0.4f);
-            Reel.Capture(Kind.Melee, "MELEE KILL", 60, 0f);
+            // (a reel from saved pictures, when BepInEx\highlightreel-sample.txt lists them: "picture.png|Kind|CAPTION" a line)
+            string sample = Path.Combine(Paths.BepInExRootPath, "highlightreel-sample.txt");
+            if (File.Exists(sample)) Reel.LoadSample(File.ReadAllLines(sample));
+            else
+            {
+                foreach (var (kind, caption, priority) in new[] { (Kind.Boss, "BOSS DOWN: TEST", 100), (Kind.MultiKill, "QUAD KILL", 44),
+                                                                  (Kind.CloseCall, "CLOSE CALL", 50), (Kind.Melee, "MELEE KILL", 60) })
+                {
+                    Reel.Capture(kind, caption, priority, 0f).Saved = true;   // (never saved: they're samples)
+                    yield return new WaitForSecondsRealtime(0.4f);
+                }
+            }
             yield return new WaitForSecondsRealtime(0.6f);
             Reel.Testing = false;
             try

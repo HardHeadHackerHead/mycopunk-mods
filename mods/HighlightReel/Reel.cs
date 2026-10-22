@@ -98,6 +98,25 @@ namespace HighlightReel
             Plugin.Log.LogInfo($"Highlight Reel: {h.Caption}");
         }
 
+        // A reel made from saved pictures, for showing what a mission's reel looks like: "picture.png|Kind|CAPTION" a line. Never saved.
+        public static void LoadSample(IEnumerable<string> lines)
+        {
+            foreach (string line in lines)
+            {
+                string[] p = line.Split('|');
+                if (p.Length < 3 || !File.Exists(p[0].Trim()) || !Enum.TryParse(p[1].Trim(), out Kind kind)) continue;
+                var tex = new Texture2D(2, 2);
+                if (!tex.LoadImage(File.ReadAllBytes(p[0].Trim()))) { Destroy(tex); continue; }
+                var h = new Highlight { Kind = kind, Caption = p[2].Trim(), Priority = 50, Order = order++, Saved = true };
+                h.Picture = new RenderTexture(Width, Height, 0, RenderTextureFormat.ARGB32) { name = "HighlightReel sample" };
+                h.Picture.Create();
+                Graphics.Blit(tex, h.Picture);
+                Destroy(tex);
+                Shots.Add(h);
+            }
+            Plugin.Log.LogInfo($"Highlight Reel: sample reel of {Shots.Count} saved pictures");
+        }
+
         // The reel as PNGs, once each: read back from the graphics card without waiting on it, written on another thread.
         public static void SaveAll()
         {

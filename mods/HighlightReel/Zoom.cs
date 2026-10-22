@@ -15,7 +15,7 @@ namespace HighlightReel
         public static int ForceIndex = -1;   // (the test's "point at picture n", for looking at it without a mouse)
 
         private readonly List<(RectTransform frame, Highlight shot)> frames = new List<(RectTransform, Highlight)>();
-        private MissionRewardsWindow window;
+        private RectTransform screen;
         private TMP_Text style;
         private RectTransform big;
         private RawImage bigPicture;
@@ -23,9 +23,9 @@ namespace HighlightReel
         private TMP_Text bigCaption;
         private int showing = -1;
 
-        public void Setup(MissionRewardsWindow window, TMP_Text style)
+        public void Setup(RectTransform screen, TMP_Text style)
         {
-            this.window = window;
+            this.screen = screen;
             this.style = style;
         }
 
@@ -66,7 +66,7 @@ namespace HighlightReel
         // away from the small one closes it).
         private void Build()
         {
-            var screen = (RectTransform)window.transform;
+            // (over the middle of the screen it is on)
             float w = Mathf.Min(screen.rect.width * 0.62f, 1400f), h = w * Reel.Height / Reel.Width;
 
             big = new GameObject(Name, typeof(RectTransform)).GetComponent<RectTransform>();

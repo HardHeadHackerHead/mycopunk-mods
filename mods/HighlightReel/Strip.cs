@@ -8,39 +8,79 @@ using UnityEngine.UI;
 
 namespace HighlightReel
 {
-    // The mission's highlights on its reward screen: a grid of pictures with their captions in the gap between the XP column and
-    // the Rewards column (empty whatever the mission paid: more XP rows or rewards don't push it off the screen), in the order they
-    // happened. The reel is saved as pictures when this screen opens.
+    // Where the reel is shown. After a successful mission: on the awards screen that follows the rewards (the player cards,
+    // "Deadliest" and the like), in one big row above the cards (empty however many players there are). That screen only comes after a success, so after a failed or
+    // aborted mission: on the reward screen, in the gap between the XP and Rewards columns. Either way it's saved when the reward
+    // screen opens, and pointing at a picture shows it big.
     [HarmonyPatch(typeof(MissionRewardsWindow), nameof(MissionRewardsWindow.SetRewards))]
+    internal static class OnRewards
+    {
+        private static void Postfix(MissionRewardsWindow __instance, MissionManager.MissionState completed)
+        {
+            Strip.Remove(__instance.transform);   // (the game reuses this screen: last time's reel goes first)
+            Reel.SaveAll();
+            // (a success: the awards screen comes next, and shows it there)
+            if (completed != MissionManager.MissionState.Completed && Reel.Instance != null)
+                __instance.StartCoroutine(Strip.Later(__instance, () => Strip.InTheGap(__instance)));
+        }
+    }
+
+    [HarmonyPatch(typeof(MissionStatsWindow), "OnOpen")]
+    internal static class OnAwards
+    {
+        private static void Postfix(MissionStatsWindow __instance)
+        {
+            Strip.Remove(__instance.transform);
+            if (Reel.Instance != null) __instance.StartCoroutine(Strip.Later(__instance, () => Strip.AboveTheCards(__instance)));
+        }
+    }
+
     internal static class Strip
     {
         private const string Name = "HighlightReelStrip";
 
-        private static void Postfix(MissionRewardsWindow __instance)
-        {
-            Remove(__instance);   // (the game reuses this screen: last time's strip goes first)
-            Reel.SaveAll();
-            if (Reel.Instance != null) __instance.StartCoroutine(Show(__instance));
-        }
-
-        private static void Remove(MissionRewardsWindow window)
+        public static void Remove(Transform window)
         {
             foreach (Transform t in window.GetComponentsInChildren<Transform>(true))
                 if (t != null && (t.name == Name || t.name == Zoom.Name)) Object.Destroy(t.gameObject);
         }
 
-        private static IEnumerator Show(MissionRewardsWindow window)
+        // after the screen has come in (and any picture still being taken is in)
+        public static IEnumerator Later(MonoBehaviour window, System.Action build)
         {
-            // after the screen's title comes in (and any picture still being taken is in)
             yield return new WaitForSecondsRealtime(1.2f);
             if (window == null || !window.isActiveAndEnabled || Reel.Shots.Count == 0) yield break;
-            try { Build(window); }
-            catch (System.Exception e) { Plugin.Log.LogWarning("Highlight Reel: the strip didn't build: " + e); }
+            try { build(); }
+            catch (System.Exception e) { Plugin.Log.LogWarning("Highlight Reel: the reel didn't build: " + e); }
         }
 
-        private static void Build(MissionRewardsWindow window)
+        // The awards screen: a row as wide as the screen allows (wrapping after six), in the empty top of the screen, above the
+        // player cards (and the event's points, when there are any).
+        public static void AboveTheCards(MissionStatsWindow window)
         {
-            // measured in the screen's own space (it's a hologram that turns with the camera): the gap between the two columns
+            var screen = (RectTransform)window.transform;
+            var corners = new Vector3[4];
+            float cardsTop = screen.rect.center.y;
+            // (the cards and the points texts themselves: their containers stretch over the whole screen)
+            var parts = new List<RectTransform>();
+            foreach (MissionStat card in window.statDisplays)
+                if (card != null && card.gameObject.activeInHierarchy) parts.AddRange(card.GetComponentsInChildren<RectTransform>(false));
+            foreach (TMP_Text text in new[] { window.eventText1, window.eventText2, window.eventPointsText })
+                if (text != null && text.gameObject.activeInHierarchy) parts.Add(text.rectTransform);
+            foreach (RectTransform part in parts)
+            {
+                part.GetWorldCorners(corners);
+                cardsTop = Mathf.Max(cardsTop, screen.InverseTransformPoint(corners[1]).y);
+            }
+            TMP_Text style = window.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(t => t.text.Trim().ToUpperInvariant() == "DEADLIEST")
+                             ?? window.GetComponentsInChildren<TMP_Text>(true).First();
+            Grid(screen, style, style.fontSize * 1.6f, screen.rect.center.x, screen.rect.yMax - screen.rect.height * 0.05f,
+                 screen.rect.width * 0.9f, 6, 360f, cardsTop + 40f);
+        }
+
+        // The reward screen: a column in the gap between the XP and the Rewards (empty whatever the mission paid).
+        public static void InTheGap(MissionRewardsWindow window)
+        {
             var screen = (RectTransform)window.transform;
             var corners = new Vector3[4];
             window.xpParent.GetWorldCorners(corners);
@@ -50,45 +90,50 @@ namespace HighlightReel
             window.resourceParent.GetWorldCorners(corners);
             gapRight = Mathf.Min(gapRight, screen.InverseTransformPoint(corners[0]).x);
             if (gapRight - gapLeft < 200f) { gapLeft = -150f; gapRight = 150f; }   // (columns closer than expected: the middle of the screen)
-            float bottomLimit = screen.rect.yMin + screen.rect.height * 0.17f;   // (above the OK button)
+            TMP_Text style = window.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(t => t.text.Trim().ToUpperInvariant() == "XP") ?? window.missionText;
+            Grid(screen, style, style.fontSize, (gapLeft + gapRight) * 0.5f, top, gapRight - gapLeft - 20f, 2, 240f,
+                 screen.rect.yMin + screen.rect.height * 0.17f);   // (above the OK button)
+        }
 
+        // The pictures in order, `perRow` to a row at most, as big as `width` and the room down to `bottomLimit` allow, each framed in
+        // its colour with its caption under it, under a HIGHLIGHTS header centred at (x, top).
+        private static void Grid(RectTransform screen, TMP_Text style, float headerSize, float x, float top, float width, int perRow, float maxPicture, float bottomLimit)
+        {
             var strip = new GameObject(Name, typeof(RectTransform)).GetComponent<RectTransform>();
             strip.SetParent(screen, false);
             strip.localRotation = Quaternion.identity;
             strip.localScale = Vector3.one;
             strip.anchorMin = strip.anchorMax = new Vector2(0.5f, 0.5f);
-            strip.localPosition = new Vector3((gapLeft + gapRight) * 0.5f, top, 0f);
+            strip.localPosition = new Vector3(x, top, 0f);
 
-            TMP_Text style = window.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(t => t.text.Trim().ToUpperInvariant() == "XP") ?? window.missionText;
             float y = 0f;
-            Text(strip, style, "HIGHLIGHTS", style.fontSize, Color.white, 0f, ref y);
+            Text(strip, style, "HIGHLIGHTS", headerSize, Color.white, 0f, ref y);
             y -= 8f;
 
-            // two to a row when the gap is wide enough, as big as the room above the OK button allows
             List<Highlight> shots = Reel.Shots.Where(s => s.Picture != null).OrderBy(s => s.Order).ToList();
-            float gap = 14f, captionSize = Mathf.Max(style.fontSize * 0.42f, 13f), room = gapRight - gapLeft - 20f;
-            int columns = room >= 2 * 150f + gap ? 2 : 1;
+            float gap = 16f, captionSize = Mathf.Max(style.fontSize * 0.5f, 14f);
+            int columns = Mathf.Max(1, Mathf.Min(shots.Count, Mathf.Min(perRow, Mathf.FloorToInt((width + gap) / (140f + gap)))));
             int rows = Mathf.CeilToInt(shots.Count / (float)columns);
-            float w = Mathf.Min(240f, (room - gap * (columns - 1)) / columns);
+            float w = Mathf.Min(maxPicture, (width - gap * (columns - 1)) / columns);
             float rowExtra = captionSize * 1.6f + 10f;   // (the caption under each picture)
             float tall = top + y - bottomLimit;
             if (rows * (w * Reel.Height / Reel.Width + rowExtra) > tall) w = Mathf.Max(80f, (tall / rows - rowExtra) * Reel.Width / Reel.Height);
             float h = w * Reel.Height / Reel.Width;
 
             var zoom = strip.gameObject.AddComponent<Zoom>();
-            zoom.Setup(window, style);
+            zoom.Setup(screen, style);
             for (int i = 0; i < shots.Count; i++)
             {
                 int col = i % columns, row = i / columns;
                 int inRow = Mathf.Min(columns, shots.Count - row * columns);
-                float x = (col - (inRow - 1) * 0.5f) * (w + gap);
+                float px = (col - (inRow - 1) * 0.5f) * (w + gap);
                 float rowTop = y - row * (h + rowExtra);
 
                 var frame = new GameObject("Shot", typeof(RectTransform)).GetComponent<RectTransform>();
                 frame.SetParent(strip, false);
                 frame.anchorMin = frame.anchorMax = new Vector2(0.5f, 1f);
                 frame.sizeDelta = new Vector2(w + 6f, h + 6f);
-                frame.localPosition = new Vector3(x, rowTop - h * 0.5f - 3f, 0f);
+                frame.localPosition = new Vector3(px, rowTop - h * 0.5f - 3f, 0f);
                 var border = frame.gameObject.AddComponent<Image>();
                 border.color = CaptionColor(shots[i]);
                 border.raycastTarget = false;
@@ -102,7 +147,7 @@ namespace HighlightReel
                 raw.raycastTarget = false;
 
                 float cy = rowTop - h - 10f;
-                var caption = Text(strip, style, shots[i].Caption, captionSize, CaptionColor(shots[i]), x, ref cy);
+                var caption = Text(strip, style, shots[i].Caption, captionSize, CaptionColor(shots[i]), px, ref cy);
                 caption.rectTransform.sizeDelta = new Vector2(w + gap, caption.rectTransform.sizeDelta.y);
             }
         }
