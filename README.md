@@ -87,6 +87,15 @@ Only you need it.
 
 **[More: what it catches, settings and screenshots →](mods/HighlightReel/README.md)**
 
+### 🦾 Quad's Pull Yourself Together
+<img src="mods/PullYourselfTogether/cover.png" alt="Quad's Pull Yourself Together" width="100%">
+
+When your robot dies it comes apart, torso and legs. Now you **crawl your torso back to your legs** on its own arms, with one big
+marker showing the way. And if two of you are down at once, you can be **put back together wrong**: one walks, the other shoots.
+The host and whoever crawls need it.
+
+**[More: how it works, keys, multiplayer and settings →](mods/PullYourselfTogether/README.md)**
+
 ## 🧑‍💻 For developers
 
 You need the .NET SDK and the game. BepInEx and HarmonyX come from NuGet, so nothing has to be installed in the game to build.

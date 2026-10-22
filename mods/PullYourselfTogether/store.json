@@ -1,0 +1,20 @@
+{
+  "team": "Quads_Lab",
+  "name": "Quads_Pull_Yourself_Together",
+  "description": "Die and your robot splits in two: now crawl your torso back to your legs on its arms. Two players down? Get put back together wrong: one walks, one shoots.",
+  "website": "https://github.com/HardHeadHackerHead/mycopunk-mods/tree/main/mods/PullYourselfTogether",
+  "dependencies": [
+    "BepInEx-BepInExPack_Mycopunk-5.4.2403"
+  ],
+  "files": [
+    "mods/PullYourselfTogether/bin/Release/netstandard2.1/PullYourselfTogether.dll"
+  ],
+  "plugin_folder": "PullYourselfTogether",
+  "icon": "mods/PullYourselfTogether/icon.png",
+  "thunderstore": {
+    "community": "mycopunk",
+    "categories": [
+      "mods"
+    ]
+  }
+}
