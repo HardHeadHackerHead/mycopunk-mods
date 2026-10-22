@@ -65,7 +65,7 @@ which character said it and roughly when, and we'll add it.
 
 ## 🤖 Made with AI
 
-Made with the help of Claude (Anthropic), with Claude Code: designed, written and checked together, and tried in the game.
+Made with the help of Claude (Anthropic), with Claude Code: designed, written and checked together, and tried in the game. Its icon was made with AI image generation.
 
 ## 💬 Join us on Discord
 

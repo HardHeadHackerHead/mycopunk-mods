@@ -99,7 +99,7 @@ HarmonyX belong to their respective authors.
 ## 🤖 Made with AI
 
 Made with the help of Claude (Anthropic), with Claude Code: designed, written and checked together, and tried in the game. The
-Discord and support banners are AI-generated.
+Discord and support banners and the mod icons are AI-generated (their originals and prompts are in `docs/artwork/`).
 
 ## 💬 Join us on Discord
 
