@@ -1,0 +1,21 @@
+{
+  "team": "Quads_Lab",
+  "name": "Quads_Highlight_Reel",
+  "description": "Highlight reel: automatic screenshots of your best moments (boss kills, multi-kills, close calls, revives), shown on the mission reward screen (hover to enlarge) and saved to Pictures. Client only.",
+  "website": "https://github.com/HardHeadHackerHead/mycopunk-mods/tree/main/mods/HighlightReel",
+  "dependencies": [
+    "BepInEx-BepInExPack_Mycopunk-5.4.2403"
+  ],
+  "files": [
+    "mods/HighlightReel/bin/Release/netstandard2.1/HighlightReel.dll"
+  ],
+  "plugin_folder": "HighlightReel",
+  "icon": "mods/HighlightReel/icon.png",
+  "thunderstore": {
+    "community": "mycopunk",
+    "categories": [
+      "client",
+      "qol"
+    ]
+  }
+}

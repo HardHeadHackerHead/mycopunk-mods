@@ -4,7 +4,7 @@
 
 **Count your loot: on the mission reward screen, each resource you earned shows its new total ("+40 → 1226"), and from your second mission on, a panel adds up what all your missions this session have paid out.**
 
-![version: 0.1.0](https://img.shields.io/badge/version-0.1.0-3b6e8f?style=flat-square)  ![multiplayer: only you](https://img.shields.io/badge/multiplayer-only%20you-7a5c2e?style=flat-square)  ![made with: Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-c26a3d?style=flat-square)
+![version: 0.1.1](https://img.shields.io/badge/version-0.1.1-3b6e8f?style=flat-square)  ![multiplayer: only you](https://img.shields.io/badge/multiplayer-only%20you-7a5c2e?style=flat-square)  ![made with: Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-c26a3d?style=flat-square)
 
 [Source code](https://github.com/HardHeadHackerHead/mycopunk-mods/tree/main/mods/MissionHaul)  ·  [Report a bug](https://github.com/HardHeadHackerHead/mycopunk-mods/issues/new?template=bug.yml&title=%5BQuad%27s%20Mission%20Haul%5D%20)  ·  [Discord](https://discord.gg/EwTjQxEZPy)
 
@@ -95,6 +95,7 @@ helps me make new mods and keep improving the ones you already play. It's 100% o
 ## 📜 Recent changes
 
 <!-- RECENT-CHANGES -->
+- **0.1.1** Counts only the game's own reward screens: another mod's test screen (Highlight Reel's) is never added to your session.
 - **0.1.0** First release: each resource's new total on the mission reward screen, and from your second mission on, all this session's missions added up below it.
 <!-- END RECENT-CHANGES -->
 

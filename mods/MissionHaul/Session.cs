@@ -74,7 +74,8 @@ namespace MissionHaul
 
         public static void Record(List<RewardInfo> rewards, MissionManager.MissionState state)
         {
-            if (Testing || rewards == null) return;
+            // (only the game's own reward screens: they always get its shared list, a test screen (this mod's or another's) its own)
+            if (Testing || rewards == null || !ReferenceEquals(rewards, Global.rewardInfoBuffer)) return;
             Current.Add(rewards, state);
             Plugin.Log.LogInfo($"Mission Haul: mission {Current.Missions} ({state}) recorded");
             Save();

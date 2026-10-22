@@ -18,7 +18,7 @@ namespace MissionHaul
     {
         public const string Guid = "quadslab.mycopunk.missionhaul";
         public const string Title = "Quad's Mission Haul";
-        public const string Version = "0.1.0";
+        public const string Version = "0.1.1";
 
         internal static ManualLogSource Log;
         internal static ConfigEntry<bool> ShowTotals;
