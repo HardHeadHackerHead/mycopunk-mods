@@ -23,7 +23,7 @@ namespace HighlightReel
         public const string Version = "0.1.0";
 
         internal static ManualLogSource Log;
-        internal static ConfigEntry<bool> Bosses, MultiKills, CloseCalls, Revives, SaveToDiskEntry, TestKey;
+        internal static ConfigEntry<bool> Bosses, MeleeKills, MultiKills, CloseCalls, Revives, SaveToDiskEntry, TestKey;
         internal static ConfigEntry<int> MultiKillCount, MaxShots;
         internal static ConfigEntry<float> MultiKillWindow, CloseCallHealth;
         internal static ConfigEntry<string> Folder;
@@ -42,9 +42,10 @@ namespace HighlightReel
         {
             Log = Logger;
             Bosses = Config.Bind("Moments", "Bosses", true, "A picture when you kill a boss or an Abomination.");
-            MultiKills = Config.Bind("Moments", "MultiKills", true, "A picture when you kill several enemies in quick succession.");
-            MultiKillCount = Config.Bind("Moments", "MultiKillCount", 3, new ConfigDescription("How many kills make a multi-kill.", new AcceptableValueRange<int>(2, 20)));
-            MultiKillWindow = Config.Bind("Moments", "MultiKillWindow", 2f, new ConfigDescription("Seconds between kills that still count as one multi-kill.", new AcceptableValueRange<float>(0.5f, 10f)));
+            MeleeKills = Config.Bind("Moments", "MeleeKills", true, "A picture when you kill an enemy with your melee (one every 15 seconds at most).");
+            MultiKills = Config.Bind("Moments", "MultiKills", true, "A picture when you kill several enemies in a burst (one per burst, a rest between bursts).");
+            MultiKillCount = Config.Bind("Moments", "MultiKillCount", 4, new ConfigDescription("How many kills within MultiKillWindow make a multi-kill.", new AcceptableValueRange<int>(2, 20)));
+            MultiKillWindow = Config.Bind("Moments", "MultiKillWindow", 1f, new ConfigDescription("Seconds those kills have to fall within (and between the kills that carry a burst on).", new AcceptableValueRange<float>(0.3f, 5f)));
             CloseCalls = Config.Bind("Moments", "CloseCalls", true, "A picture when your health dips very low and you live through it.");
             CloseCallHealth = Config.Bind("Moments", "CloseCallHealth", 0.15f, new ConfigDescription("How low is \"very low\" (0.15 = 15% of your health).", new AcceptableValueRange<float>(0.02f, 0.5f)));
             Revives = Config.Bind("Moments", "Revives", true, "A picture when you're brought back up.");
@@ -111,11 +112,13 @@ namespace HighlightReel
             }
             Reel.Testing = true;
             Reel.Clear();
-            Reel.Capture("BOSS DOWN: TEST", 100, 0f);
+            Reel.Capture(Kind.Boss, "BOSS DOWN: TEST", 100, 0f);
             yield return new WaitForSecondsRealtime(0.4f);
-            Reel.Capture("TRIPLE KILL", 55, 0f);
+            Reel.Capture(Kind.MultiKill, "QUAD KILL", 44, 0f);
             yield return new WaitForSecondsRealtime(0.4f);
-            Reel.Capture("CLOSE CALL", 50, 0f);
+            Reel.Capture(Kind.CloseCall, "CLOSE CALL", 50, 0f);
+            yield return new WaitForSecondsRealtime(0.4f);
+            Reel.Capture(Kind.Melee, "MELEE KILL", 60, 0f);
             yield return new WaitForSecondsRealtime(0.6f);
             Reel.Testing = false;
             try

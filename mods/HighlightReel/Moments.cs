@@ -1,44 +1,67 @@
+using System.Collections.Generic;
 using HarmonyLib;
 using Pigeon.Movement;
 using UnityEngine;
 
 namespace HighlightReel
 {
-    // Your kills, as the game counts them for you: a boss or an Abomination is a highlight on its own, and a few kills close
-    // together are a multi-kill (one picture, its caption raised as the streak grows).
+    // Your kills, as the game counts them for you: a boss or an Abomination is a highlight on its own, so is a kill with your melee,
+    // and a burst of kills packed close together is a multi-kill (one picture per burst, its caption going up as the burst does).
+    // In a horde the kills never stop, so a burst needs them tight (MultiKillCount within MultiKillWindow), and there's a rest
+    // between bursts.
     [HarmonyPatch(typeof(PlayerData), nameof(PlayerData.OnLocalPlayerKillTarget))]
     internal static class Kills
     {
-        private static float streakStart = -999f, lastKill = -999f;
-        private static int streak;
-        private static Highlight streakShot;
+        private const float BurstRest = 25f, MeleeRest = 15f;
+        private static readonly Queue<float> recent = new Queue<float>();
+        private static Highlight burstShot;
+        private static int burstKills;
+        private static float lastKill = -999f, nextBurst, nextMelee;
 
         private static void Postfix(ref KillCallbackData data)
         {
             if (LevelData.IsHub || (data.target.Type & TargetType.Enemy) == 0) return;
-            if (data.target is EnemyCore core && core.Brain != null)
+            if (data.target is EnemyCore core && core.Brain != null && Plugin.Bosses.Value)
             {
                 EnemyBrain brain = core.Brain;
                 string name = brain.SourceName;
-                if (brain.EnemyType == EnemyType.Boss && Plugin.Bosses.Value)
-                    Reel.Capture("BOSS DOWN" + (string.IsNullOrEmpty(name) ? "" : ": " + name.ToUpperInvariant()), 100, 0.35f);
-                else if (brain.EnemyType == EnemyType.Abomination && Plugin.Bosses.Value)
-                    Reel.Capture("ABOMINATION DOWN", 80, 0.35f);
+                if (brain.EnemyType == EnemyType.Boss)
+                    Reel.Capture(Kind.Boss, "BOSS DOWN" + (string.IsNullOrEmpty(name) ? "" : ": " + name.ToUpperInvariant()), 100, 0.35f);
+                else if (brain.EnemyType == EnemyType.Abomination)
+                    Reel.Capture(Kind.Boss, "ABOMINATION DOWN", 80, 0.35f);
+            }
+
+            float now = Time.time;
+            if (data.damageData.IsMelee && Plugin.MeleeKills.Value && now >= nextMelee)
+            {
+                nextMelee = now + MeleeRest;
+                Reel.Capture(Kind.Melee, "MELEE KILL", 60, 0.12f);
             }
 
             if (!Plugin.MultiKills.Value) return;
-            float now = Time.time;
-            if (now - lastKill > Plugin.MultiKillWindow.Value) { streak = 0; streakShot = null; streakStart = now; }
-            lastKill = now;
-            streak++;
-            if (streak >= Plugin.MultiKillCount.Value)
+            float window = Plugin.MultiKillWindow.Value;
+            // a burst carries on while the kills keep coming that close together
+            if (burstShot != null && now - lastKill <= window)
             {
-                string caption = streak == 3 ? "TRIPLE KILL" : streak == 4 ? "QUAD KILL" : "RAMPAGE ×" + streak;
-                streakShot = Reel.Capture(caption, 40 + streak * 5, 0.15f, replaces: streakShot);
+                burstKills++;
+                burstShot.Caption = Caption(burstKills);
+            }
+            else if (burstShot != null) { burstShot = null; nextBurst = now + BurstRest; }
+            lastKill = now;
+
+            recent.Enqueue(now);
+            while (recent.Count > 0 && now - recent.Peek() > window) recent.Dequeue();
+            if (burstShot == null && recent.Count >= Plugin.MultiKillCount.Value && now >= nextBurst)
+            {
+                burstKills = recent.Count;
+                burstShot = Reel.Capture(Kind.MultiKill, Caption(burstKills), 40 + Mathf.Min(burstKills, 10), 0.15f);
             }
         }
 
-        public static void Reset() { streak = 0; streakShot = null; lastKill = -999f; }
+        private static string Caption(int kills) =>
+            kills <= 3 ? "TRIPLE KILL" : kills == 4 ? "QUAD KILL" : "RAMPAGE ×" + kills;
+
+        public static void Reset() { recent.Clear(); burstShot = null; burstKills = 0; lastKill = -999f; nextBurst = 0f; nextMelee = 0f; }
     }
 
     // What happens to you, checked every frame: a close call (your health dips very low and you live through it) and being
@@ -56,7 +79,7 @@ namespace HighlightReel
             bool alive = me.IsAlive;
 
             if (alive && !wasAlive && Plugin.Revives.Value)
-                Reel.Capture("BACK IN THE FIGHT", 30, 0.6f);
+                Reel.Capture(Kind.Revive, "BACK IN THE FIGHT", 30, 0.6f);
             wasAlive = alive;
 
             if (!Plugin.CloseCalls.Value || !alive) { if (!alive) inCloseCall = false; return; }
@@ -66,7 +89,8 @@ namespace HighlightReel
                 inCloseCall = true;
                 closeCallCooldownUntil = Time.time + 30f;
                 // (kept only if you're still up three seconds later)
-                Reel.Capture("CLOSE CALL", 50, 0f, keepIf: () => (object)Player.LocalPlayer != null && Player.LocalPlayer && Player.LocalPlayer.IsAlive, decideAfter: 3f);
+                Reel.Capture(Kind.CloseCall, "CLOSE CALL", 50, 0f,
+                    keepIf: () => (object)Player.LocalPlayer != null && Player.LocalPlayer && Player.LocalPlayer.IsAlive, decideAfter: 3f);
             }
             else if (inCloseCall && health > Plugin.CloseCallHealth.Value * 2f) inCloseCall = false;
         }

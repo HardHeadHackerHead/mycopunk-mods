@@ -2,7 +2,7 @@
 
 <img src="cover.png" alt="Quad's Highlight Reel" width="100%">
 
-**Your best moments, caught for you: boss kills, multi-kills, close calls and comebacks are photographed as they happen and shown as a highlight reel on the mission reward screen. Point at one to see it big. They're saved to your Pictures folder too.**
+**Your best moments, caught for you: boss kills, melee kills, multi-kills, close calls and comebacks are photographed as they happen and shown as a highlight reel on the mission reward screen. Point at one to see it big. They're saved to your Pictures folder too.**
 
 ![version: 0.1.0](https://img.shields.io/badge/version-0.1.0-3b6e8f?style=flat-square)  ![multiplayer: only you](https://img.shields.io/badge/multiplayer-only%20you-7a5c2e?style=flat-square)  ![made with: Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-c26a3d?style=flat-square)
 
@@ -22,27 +22,28 @@ You don't have to remember to take screenshots: the mod watches for the moments 
 |---|---|
 | You kill a boss | **BOSS DOWN** and its name |
 | You kill an Abomination | **ABOMINATION DOWN** |
-| 3 kills or more within 2 seconds | **TRIPLE KILL**, **QUAD KILL**, **RAMPAGE ×6**... (one picture, its caption going up as the streak does) |
+| You kill an enemy with your melee | **MELEE KILL** (one every 15 seconds at most) |
+| A burst of kills: 4 or more within 1 second | **QUAD KILL**, **RAMPAGE ×6**... (one picture per burst, its caption going up as the burst does; a rest between bursts, so a horde isn't one endless rampage) |
 | Your health dips below 15% and you live through it | **CLOSE CALL** (kept only if you're still up a few seconds later) |
 | You're brought back up | **BACK IN THE FIGHT** |
 
 ### How it works
 
-- **On the reward screen.** After the mission, under your XP, a **HIGHLIGHTS** strip shows the mission's pictures in the order they happened, each framed in its colour: gold for bosses, cyan for multi-kills and close calls.
+- **On the reward screen.** After the mission, a **HIGHLIGHTS** column between your XP and your rewards shows the mission's pictures in the order they happened, each framed in its colour: gold for bosses, orange for melee kills, cyan for multi-kills and close calls. However much XP or loot the mission gave, it stays clear of them.
 - **Point at one to see it big.** It opens over the middle of the screen, with its caption, until you point away.
-- **Saved for you.** Each picture is also saved as a PNG in your **Pictures** folder, under **Mycopunk Highlights** (or a folder of your own, or not at all: see the settings).
-- **The best six.** A mission keeps up to six (bosses first when there are more), and a new mission starts a new reel.
+- **Saved for you.** When the reward screen opens, the reel is saved as PNGs in your **Pictures** folder, under **Mycopunk Highlights** (or a folder of your own, or not at all: see the settings).
+- **A mix of the best six.** A mission keeps up to six: every boss, at most two multi-kills and two melee kills, one close call and one comeback. A new mission starts a new reel.
 - **No stutter.** The pictures are taken on the graphics card and saved in the background, so play doesn't hitch.
 
 ## 📸 Screenshots
 
-**The reward screen's highlight reel** (from the mod's test, in the hub: in a mission, they're your fights)
+**The reward screen's highlight reel, between your XP and your rewards** (from the mod's test, in the hub: in a mission, they're your fights)
 
-<img src="images/1.jpg" alt="The XP column with a HIGHLIGHTS strip of three captioned pictures: BOSS DOWN: TEST, TRIPLE KILL, CLOSE CALL" width="100%">
+<img src="images/1.jpg" alt="The reward screen with a HIGHLIGHTS column between XP and Rewards: BOSS DOWN: TEST, QUAD KILL, CLOSE CALL, MELEE KILL" width="100%">
 
 **Pointing at one shows it big**
 
-<img src="images/2.jpg" alt="A highlight shown big over the reward screen, captioned TRIPLE KILL" width="100%">
+<img src="images/2.jpg" alt="A highlight shown big over the reward screen, captioned MELEE KILL" width="100%">
 
 ## 👥 Multiplayer
 
@@ -57,9 +58,10 @@ In `BepInEx\config\quadslab.mycopunk.highlightreel.cfg`, made the first time the
 | Setting | Default | What it does |
 |---|---|---|
 | `Bosses` | `true` | A picture when you kill a boss or an Abomination. |
-| `MultiKills` | `true` | A picture when you kill several enemies in quick succession. |
-| `MultiKillCount` | `3` | How many kills make a multi-kill. |
-| `MultiKillWindow` | `2` | Seconds between kills that still count as one multi-kill. |
+| `MeleeKills` | `true` | A picture when you kill an enemy with your melee (one every 15 seconds at most). |
+| `MultiKills` | `true` | A picture when you kill several enemies in a burst (one per burst, a rest between bursts). |
+| `MultiKillCount` | `4` | How many kills within `MultiKillWindow` make a multi-kill. |
+| `MultiKillWindow` | `1` | Seconds those kills have to fall within (and between the kills that carry a burst on). |
 | `CloseCalls` | `true` | A picture when your health dips very low and you live through it. |
 | `CloseCallHealth` | `0.15` | How low is "very low" (0.15 = 15% of your health). |
 | `Revives` | `true` | A picture when you're brought back up. |
@@ -68,15 +70,15 @@ In `BepInEx\config\quadslab.mycopunk.highlightreel.cfg`, made the first time the
 
 | Setting | Default | What it does |
 |---|---|---|
-| `MaxShots` | `6` | How many pictures a mission keeps (the best ones, bosses first). |
-| `SaveToDisk` | `true` | Also save each picture as a PNG. |
+| `MaxShots` | `6` | How many pictures a mission keeps (a mix of the best, bosses first). |
+| `SaveToDisk` | `true` | Also save the reel as PNGs when the reward screen opens. |
 | `Folder` | (empty) | Where to save them; empty means your Pictures folder, in "Mycopunk Highlights". |
 
 **Debug**
 
 | Setting | Default | What it does |
 |---|---|---|
-| `TestKey` | `false` | **F8** in the hub takes three sample pictures and opens the reward screen with them (never saved; only in the hub). |
+| `TestKey` | `false` | **F8** in the hub takes four sample pictures and opens the reward screen with them (never saved; only in the hub). |
 
 A moment it should have caught, or one it shouldn't have? [Tell us](https://github.com/HardHeadHackerHead/mycopunk-mods/issues/new?template=bug.yml&title=%5BQuad%27s%20Highlight%20Reel%5D%20).
 
@@ -122,7 +124,7 @@ helps me make new mods and keep improving the ones you already play. It's 100% o
 ## 📜 Recent changes
 
 <!-- RECENT-CHANGES -->
-- **0.1.0** First release: pictures of your best moments (bosses, multi-kills, close calls, revives) on the mission reward screen, big when you point at them, and saved to your Pictures folder.
+- **0.1.0** First release: pictures of your best moments (bosses, melee kills, multi-kills, close calls, revives) on the mission reward screen, big when you point at them, and saved to your Pictures folder.
 <!-- END RECENT-CHANGES -->
 
 [Every change](CHANGELOG.md)

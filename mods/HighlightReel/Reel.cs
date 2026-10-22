@@ -8,17 +8,21 @@ using UnityEngine.Rendering;
 
 namespace HighlightReel
 {
+    internal enum Kind { Boss, Melee, MultiKill, CloseCall, Revive }
+
     internal sealed class Highlight
     {
         public RenderTexture Picture;
         public string Caption;
+        public Kind Kind;
         public int Priority;   // (bosses first when the reel is full)
         public int Order;
-        public bool Cancelled;   // (replaced before its picture was in: dropped when it is)
+        public bool Saved;
     }
 
-    // This mission's highlights: pictures of the screen a moment after each one, kept on the graphics card (a copy to the GPU,
-    // no reading back while you play), and saved as PNGs in the background if SaveToDisk is on.
+    // This mission's highlights: pictures of the screen a moment after each one, kept on the graphics card (a copy on the GPU, no
+    // reading back while you play). The reel keeps a mix: a few of each kind at most, the best overall. It's saved as PNGs once, when
+    // the mission's reward screen opens.
     internal sealed class Reel : MonoBehaviour
     {
         public const int Width = 960, Height = 540;
@@ -28,26 +32,32 @@ namespace HighlightReel
         public static readonly List<Highlight> Shots = new List<Highlight>();
         private static int order;
 
+        // How many of a kind one reel keeps, so six pictures aren't six of the same thing (a horde is one long multi-kill).
+        private static int Cap(Kind kind) => kind == Kind.Boss ? 99 : kind == Kind.MultiKill || kind == Kind.Melee ? 2 : 1;
+
         public static void Clear()
         {
-            foreach (Highlight h in Shots) if (h.Picture != null) { h.Picture.Release(); Destroy(h.Picture); }
+            foreach (Highlight h in Shots) Free(h);
             Shots.Clear();
             order = 0;
         }
 
-        // Take a picture of what's on screen after `delay` seconds (so the kill's effects are in it). `replaces` is an earlier shot
-        // to drop for this one (a TRIPLE KILL that became a QUAD KILL).
-        // `keepIf`, when given, is asked `decideAfter` seconds later: a close call is only one if you're still alive.
-        public static Highlight Capture(string caption, int priority, float delay, Highlight replaces = null, Func<bool> keepIf = null, float decideAfter = 0f)
+        private static void Free(Highlight h)
+        {
+            if (h.Picture != null) { h.Picture.Release(); Destroy(h.Picture); h.Picture = null; }
+        }
+
+        // Take a picture of what's on screen after `delay` seconds (so the kill's effects are in it). `keepIf`, when given, is asked
+        // `decideAfter` seconds later: a close call is only one if you're still alive.
+        public static Highlight Capture(Kind kind, string caption, int priority, float delay, Func<bool> keepIf = null, float decideAfter = 0f)
         {
             if (Instance == null) return null;
-            var h = new Highlight { Caption = caption, Priority = priority, Order = order++ };
-            if (replaces != null) replaces.Cancelled = true;
-            Instance.StartCoroutine(Instance.Take(h, delay, replaces, keepIf, decideAfter));
+            var h = new Highlight { Kind = kind, Caption = caption, Priority = priority, Order = order++ };
+            Instance.StartCoroutine(Instance.Take(h, delay, keepIf, decideAfter));
             return h;
         }
 
-        private IEnumerator Take(Highlight h, float delay, Highlight replaces, Func<bool> keepIf, float decideAfter)
+        private IEnumerator Take(Highlight h, float delay, Func<bool> keepIf, float decideAfter)
         {
             if (delay > 0f) yield return new WaitForSecondsRealtime(delay);
             yield return new WaitForEndOfFrame();
@@ -64,27 +74,37 @@ namespace HighlightReel
             catch (Exception e) { Plugin.Log.LogWarning("Highlight Reel: couldn't take the picture: " + e.Message); yield break; }
             finally { RenderTexture.ReleaseTemporary(full); }
 
-            if (h.Cancelled) { h.Picture.Release(); Destroy(h.Picture); yield break; }
             if (keepIf != null)
             {
                 yield return new WaitForSecondsRealtime(decideAfter);
-                if (!keepIf()) { h.Picture.Release(); Destroy(h.Picture); yield break; }
+                if (!keepIf()) { Free(h); yield break; }
             }
 
-            if (replaces != null && Shots.Remove(replaces) && replaces.Picture != null) { replaces.Picture.Release(); Destroy(replaces.Picture); }
             Shots.Add(h);
-            // a full reel keeps the best: drop the lowest priority (the oldest of those)
+            // a kind over its cap loses its least: the lowest priority, then the oldest
+            List<Highlight> same = Shots.Where(s => s.Kind == h.Kind).ToList();
+            while (same.Count > Cap(h.Kind))
+            {
+                Highlight drop = same.OrderBy(s => s.Priority).ThenBy(s => s.Order).First();
+                same.Remove(drop); Shots.Remove(drop); Free(drop);
+            }
+            // a full reel keeps the best overall
             while (Shots.Count > Plugin.MaxShots.Value)
             {
                 Highlight worst = Shots.OrderBy(s => s.Priority).ThenBy(s => s.Order).First();
                 Shots.Remove(worst);
-                if (worst.Picture != null) { worst.Picture.Release(); Destroy(worst.Picture); }
+                Free(worst);
             }
             Plugin.Log.LogInfo($"Highlight Reel: {h.Caption}");
-            if (Plugin.SaveToDisk.Value && !Testing) Save(h);
         }
 
-        // The PNG, read back from the graphics card without waiting on it, written on another thread.
+        // The reel as PNGs, once each: read back from the graphics card without waiting on it, written on another thread.
+        public static void SaveAll()
+        {
+            if (Testing || !Plugin.SaveToDisk.Value) return;
+            foreach (Highlight h in Shots.Where(s => !s.Saved && s.Picture != null)) { h.Saved = true; Save(h); }
+        }
+
         private static void Save(Highlight h)
         {
             string caption = h.Caption;
