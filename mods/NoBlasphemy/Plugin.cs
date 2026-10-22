@@ -41,7 +41,7 @@ namespace NoBlasphemy
             LogLines = Config.Bind("Debug", "LogLines", false,
                 "Write every line changed (at start) and every line silenced (as it plays) to the BepInEx log, with its ID.");
             TestKey = Config.Bind("Debug", "TestKey", false,
-                "F8 in a game plays the next line this mod changes, as mission control would say it: you see its cleaned subtitle and hear nothing.");
+                "F8 in a game plays the next line this mod changes, as mission control would say it: you see its cleaned subtitle and hear nothing. (A file BepInEx\\noblasphemy-test.txt does the same, for automated tests.)");
 
             runner = new GameObject("NoBlasphemy");
             DontDestroyOnLoad(runner);
@@ -78,10 +78,22 @@ namespace NoBlasphemy
         }
 
         private int nextTest;
+        private float nextFileCheck;
 
         private void Update()
         {
             if (Plugin.TestKey.Value && Keyboard.current != null && Keyboard.current.f8Key.wasPressedThisFrame) PlayTest();
+            // (the same from outside the game, for automated tests: a file BepInEx\noblasphemy-test.txt plays the next line)
+            if (Plugin.TestKey.Value && Time.unscaledTime >= nextFileCheck)
+            {
+                nextFileCheck = Time.unscaledTime + 0.5f;
+                string file = System.IO.Path.Combine(BepInEx.Paths.BepInExRootPath, "noblasphemy-test.txt");
+                if (System.IO.File.Exists(file))
+                {
+                    try { System.IO.File.Delete(file); } catch (Exception) { }
+                    PlayTest();
+                }
+            }
             for (int i = pending.Count - 1; i >= 0; i--)
             {
                 if (Time.unscaledTime < pending[i].at) continue;
@@ -94,7 +106,8 @@ namespace NoBlasphemy
 
         private void PlayTest()
         {
-            if (Filter.Testable.Count == 0 || Highlighter.Instance == null || PlayerLook.Instance == null)
+            // (PlayerLook first: Highlighter.Instance looks up the local player and throws when there is none, as in the main menu)
+            if (Filter.Testable.Count == 0 || PlayerLook.Instance == null || Highlighter.Instance == null)
             {
                 Plugin.Log.LogInfo("No Blasphemy: the test key works once you're in the game");
                 return;
