@@ -11,14 +11,14 @@ namespace HighlightReel
     // Where the reel is shown. After a successful mission: on the awards screen that follows the rewards (the player cards,
     // "Deadliest" and the like), in one big row above the cards (empty however many players there are). That screen only comes after a success, so after a failed or
     // aborted mission: on the reward screen, in the gap between the XP and Rewards columns. Either way it's saved when the reward
-    // screen opens, and pointing at a picture shows it big.
+    // screen opens (when AutoSave is on), and pointing at a picture shows it big; clicking it saves it.
     [HarmonyPatch(typeof(MissionRewardsWindow), nameof(MissionRewardsWindow.SetRewards))]
     internal static class OnRewards
     {
         private static void Postfix(MissionRewardsWindow __instance, MissionManager.MissionState completed)
         {
             Strip.Remove(__instance.transform);   // (the game reuses this screen: last time's reel goes first)
-            Reel.SaveAll();
+            Reel.SaveAll();   // (only with AutoSave on)
             // (a success: the awards screen comes next, and shows it there)
             if (completed != MissionManager.MissionState.Completed && Reel.Instance != null)
                 __instance.StartCoroutine(Strip.Later(__instance, () => Strip.InTheGap(__instance)));
@@ -137,7 +137,25 @@ namespace HighlightReel
                 var border = frame.gameObject.AddComponent<Image>();
                 border.color = CaptionColor(shots[i]);
                 border.raycastTarget = false;
-                zoom.Add(frame, shots[i]);
+
+                // "SAVED" in the corner, on a dark backing so it reads on a bright picture, once it is (clicking it in the big view)
+                float tagSize = Mathf.Max(style.fontSize * 0.4f, 12f);
+                var back = new GameObject("SavedTag", typeof(RectTransform)).GetComponent<RectTransform>();
+                back.SetParent(frame, false);
+                back.anchorMin = back.anchorMax = back.pivot = new Vector2(1f, 1f);
+                back.sizeDelta = new Vector2(tagSize * 5.6f, tagSize * 1.6f);
+                back.anchoredPosition = new Vector2(-6f, -6f);
+                var shade = back.gameObject.AddComponent<Image>();
+                shade.color = new Color(0f, 0f, 0f, 0.75f);
+                shade.raycastTarget = false;
+                float ty = 0f;
+                var tag = Text(back, style, "✓ SAVED", tagSize, new Color(0.45f, 1f, 0.55f), 0f, ref ty);
+                tag.rectTransform.anchorMin = tag.rectTransform.anchorMax = tag.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+                tag.rectTransform.sizeDelta = back.sizeDelta;
+                tag.rectTransform.anchoredPosition = Vector2.zero;
+                tag.alignment = TextAlignmentOptions.Center;
+                tag.fontStyle = FontStyles.Bold;
+                zoom.Add(frame, shots[i], tag);
 
                 var pic = new GameObject("Picture", typeof(RectTransform)).GetComponent<RectTransform>();
                 pic.SetParent(frame, false);

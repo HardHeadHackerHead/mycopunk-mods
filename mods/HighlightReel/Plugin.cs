@@ -23,11 +23,10 @@ namespace HighlightReel
         public const string Version = "0.1.0";
 
         internal static ManualLogSource Log;
-        internal static ConfigEntry<bool> Bosses, MeleeKills, MultiKills, CloseCalls, Revives, SaveToDiskEntry, TestKey;
+        internal static ConfigEntry<bool> Bosses, MeleeKills, MultiKills, CloseCalls, Revives, AutoSave, TestKey;
         internal static ConfigEntry<int> MultiKillCount, MaxShots;
         internal static ConfigEntry<float> MultiKillWindow, CloseCallHealth;
         internal static ConfigEntry<string> Folder;
-        internal static ConfigEntry<bool> SaveToDisk => SaveToDiskEntry;
 
         internal static string SaveFolder => string.IsNullOrWhiteSpace(Folder.Value)
             ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "Mycopunk Highlights")
@@ -50,8 +49,9 @@ namespace HighlightReel
             CloseCallHealth = Config.Bind("Moments", "CloseCallHealth", 0.15f, new ConfigDescription("How low is \"very low\" (0.15 = 15% of your health).", new AcceptableValueRange<float>(0.02f, 0.5f)));
             Revives = Config.Bind("Moments", "Revives", true, "A picture when you're brought back up.");
             MaxShots = Config.Bind("Reel", "MaxShots", 6, new ConfigDescription("How many pictures a mission keeps (the best ones, bosses first).", new AcceptableValueRange<int>(1, 12)));
-            SaveToDiskEntry = Config.Bind("Reel", "SaveToDisk", true, "Also save each picture as a PNG.");
-            Folder = Config.Bind("Reel", "Folder", "", "Where to save them; empty means your Pictures folder, in \"Mycopunk Highlights\".");
+            AutoSave = Config.Bind("Reel", "AutoSave", false,
+                "Save every picture of the reel when the mission's over. Off: nothing is saved unless you click a picture (pointing at it shows it big).");
+            Folder = Config.Bind("Reel", "Folder", "", "Where saved pictures go; empty means your Pictures folder, in \"Mycopunk Highlights\".");
             TestKey = Config.Bind("Debug", "TestKey", false,
                 "F8 in the hub takes three sample pictures and opens the reward screen with them (never saved). " +
                 "(A file BepInEx\\highlightreel-test.txt does the same, for automated tests.)");
@@ -97,6 +97,9 @@ namespace HighlightReel
                 {
                     try { Zoom.ForceIndex = int.TryParse(File.ReadAllText(hover).Trim(), out int n) ? n : -1; File.Delete(hover); } catch (Exception) { }
                 }
+                // (and BepInEx\highlightreel-click.txt clicks the picture pointed at: saving it)
+                string click = Path.Combine(Paths.BepInExRootPath, "highlightreel-click.txt");
+                if (File.Exists(click)) { try { File.Delete(click); } catch (Exception) { } Zoom.ForceClick = true; }
             }
             if (go) StartCoroutine(Test());
         }
@@ -120,7 +123,7 @@ namespace HighlightReel
                 foreach (var (kind, caption, priority) in new[] { (Kind.Boss, "BOSS DOWN: TEST", 100), (Kind.MultiKill, "QUAD KILL", 44),
                                                                   (Kind.CloseCall, "CLOSE CALL", 50), (Kind.Melee, "MELEE KILL", 60) })
                 {
-                    Reel.Capture(kind, caption, priority, 0f).Saved = true;   // (never saved: they're samples)
+                    Reel.Capture(kind, caption, priority, 0f).Sample = true;   // (samples: saved in BepInEx\cache if clicked, never your Pictures)
                     yield return new WaitForSecondsRealtime(0.4f);
                 }
             }

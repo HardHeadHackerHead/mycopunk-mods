@@ -18,11 +18,12 @@ namespace HighlightReel
         public int Priority;   // (bosses first when the reel is full)
         public int Order;
         public bool Saved;
+        public bool Sample;   // (a test's picture: saved, when clicked, in BepInEx\cache, never your Pictures)
     }
 
     // This mission's highlights: pictures of the screen a moment after each one, kept on the graphics card (a copy on the GPU, no
-    // reading back while you play). The reel keeps a mix: a few of each kind at most, the best overall. It's saved as PNGs once, when
-    // the mission's reward screen opens.
+    // reading back while you play) for this mission only: the next mission starts a new reel, and nothing is written to disk unless you
+    // click a picture to save it (or AutoSave is on). The reel keeps a mix: a few of each kind at most, the best overall.
     internal sealed class Reel : MonoBehaviour
     {
         public const int Width = 960, Height = 540;
@@ -98,7 +99,7 @@ namespace HighlightReel
             Plugin.Log.LogInfo($"Highlight Reel: {h.Caption}");
         }
 
-        // A reel made from saved pictures, for showing what a mission's reel looks like: "picture.png|Kind|CAPTION" a line. Never saved.
+        // A reel made from saved pictures, for showing what a mission's reel looks like: "picture.png|Kind|CAPTION" a line.
         public static void LoadSample(IEnumerable<string> lines)
         {
             foreach (string line in lines)
@@ -107,7 +108,7 @@ namespace HighlightReel
                 if (p.Length < 3 || !File.Exists(p[0].Trim()) || !Enum.TryParse(p[1].Trim(), out Kind kind)) continue;
                 var tex = new Texture2D(2, 2);
                 if (!tex.LoadImage(File.ReadAllBytes(p[0].Trim()))) { Destroy(tex); continue; }
-                var h = new Highlight { Kind = kind, Caption = p[2].Trim(), Priority = 50, Order = order++, Saved = true };
+                var h = new Highlight { Kind = kind, Caption = p[2].Trim(), Priority = 50, Order = order++, Sample = true };
                 h.Picture = new RenderTexture(Width, Height, 0, RenderTextureFormat.ARGB32) { name = "HighlightReel sample" };
                 h.Picture.Create();
                 Graphics.Blit(tex, h.Picture);
@@ -117,23 +118,26 @@ namespace HighlightReel
             Plugin.Log.LogInfo($"Highlight Reel: sample reel of {Shots.Count} saved pictures");
         }
 
-        // The reel as PNGs, once each: read back from the graphics card without waiting on it, written on another thread.
+        // With AutoSave on: the whole reel as PNGs, once each, when the mission's over.
         public static void SaveAll()
         {
-            if (Testing || !Plugin.SaveToDisk.Value) return;
-            foreach (Highlight h in Shots.Where(s => !s.Saved && s.Picture != null)) { h.Saved = true; Save(h); }
+            if (Testing || !Plugin.AutoSave.Value) return;
+            foreach (Highlight h in Shots.Where(s => !s.Saved && !s.Sample && s.Picture != null)) SaveOne(h);
         }
 
-        private static void Save(Highlight h)
+        // One picture as a PNG (you clicked it): read back from the graphics card without waiting on it, written on another thread.
+        public static void SaveOne(Highlight h)
         {
+            if (h.Saved || h.Picture == null) return;
+            h.Saved = true;
             string caption = h.Caption;
+            string folder = h.Sample ? Path.Combine(BepInEx.Paths.CachePath, "HighlightReel samples") : Plugin.SaveFolder;
             AsyncGPUReadback.Request(h.Picture, 0, TextureFormat.RGBA32, request =>
             {
                 if (request.hasError) return;
                 try
                 {
                     byte[] png = ImageConversion.EncodeNativeArrayToPNG(request.GetData<byte>(), UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_SRGB, Width, Height).ToArray();
-                    string folder = Plugin.SaveFolder;
                     string name = $"{DateTime.Now:yyyy-MM-dd HH.mm.ss} {Safe(caption)}.png";
                     System.Threading.Tasks.Task.Run(() =>
                     {

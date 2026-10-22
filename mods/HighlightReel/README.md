@@ -2,7 +2,7 @@
 
 <img src="cover.png" alt="Quad's Highlight Reel" width="100%">
 
-**Your best moments, caught for you: boss kills, melee kills, multi-kills, close calls and comebacks are photographed as they happen and shown as a highlight reel when the mission's over. Point at one to see it big. They're saved to your Pictures folder too.**
+**Your best moments, caught for you: boss kills, melee kills, multi-kills, close calls and comebacks are photographed as they happen and shown as a highlight reel when the mission's over. Point at one to see it big, and click the ones you want to keep.**
 
 ![version: 0.1.0](https://img.shields.io/badge/version-0.1.0-3b6e8f?style=flat-square)  ![multiplayer: only you](https://img.shields.io/badge/multiplayer-only%20you-7a5c2e?style=flat-square)  ![made with: Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-c26a3d?style=flat-square)
 
@@ -31,9 +31,9 @@ You don't have to remember to take screenshots: the mod watches for the moments 
 
 - **When the mission's over.** After a successful mission, the awards screen that follows the rewards (your "Deadliest" card and the like) shows a **HIGHLIGHTS** row of big pictures across the top, in the order they happened, each framed in its colour: gold for bosses, orange for melee kills, cyan for multi-kills and close calls. After a failed or aborted mission there's no awards screen, so they show on the reward screen, between your XP and your rewards.
 - **Point at one to see it big.** It opens over the middle of the screen, with its caption, until you point away.
-- **Saved for you.** When the mission's reward screen opens, the reel is saved as PNGs in your **Pictures** folder, under **Mycopunk Highlights** (or a folder of your own, or not at all: see the settings).
+- **Keep the ones you like.** In the big view, click a picture to save it (**CLICK TO SAVE**, then **✓ SAVED**): it goes to your **Pictures** folder, under **Mycopunk Highlights** (or a folder of your own). Nothing else is written anywhere: the reel lives in memory for that mission only, and the next mission starts a new one. (`AutoSave` saves the whole reel, if you'd rather.)
 - **A mix of the best six.** A mission keeps up to six: every boss, at most two multi-kills and two melee kills, one close call and one comeback. A new mission starts a new reel.
-- **No stutter.** The pictures are taken on the graphics card and saved in the background, so play doesn't hitch.
+- **No stutter.** The pictures are taken on the graphics card (and a saved one written in the background), so play doesn't hitch.
 
 ## 📸 Screenshots
 
@@ -41,7 +41,7 @@ You don't have to remember to take screenshots: the mod watches for the moments 
 
 <img src="images/1.jpg" alt="The awards screen with a HIGHLIGHTS row above the Deadliest card: QUAD KILL, RAMPAGE ×13, MELEE KILL" width="100%">
 
-**Pointing at one shows it big: here, a melee kill through a wall of fire**
+**Pointing at one shows it big (here, a melee kill through a wall of fire); clicking it saves it**
 
 <img src="images/2.jpg" alt="A highlight shown big over the reward screen, captioned MELEE KILL" width="100%">
 
@@ -71,14 +71,14 @@ In `BepInEx\config\quadslab.mycopunk.highlightreel.cfg`, made the first time the
 | Setting | Default | What it does |
 |---|---|---|
 | `MaxShots` | `6` | How many pictures a mission keeps (a mix of the best, bosses first). |
-| `SaveToDisk` | `true` | Also save the reel as PNGs when the reward screen opens. |
-| `Folder` | (empty) | Where to save them; empty means your Pictures folder, in "Mycopunk Highlights". |
+| `AutoSave` | `false` | Save every picture of the reel when the mission's over. Off: only the pictures you click are saved. |
+| `Folder` | (empty) | Where saved pictures go; empty means your Pictures folder, in "Mycopunk Highlights". |
 
 **Debug**
 
 | Setting | Default | What it does |
 |---|---|---|
-| `TestKey` | `false` | **F8** in the hub takes four sample pictures and opens the reward screen with them (never saved; only in the hub). |
+| `TestKey` | `false` | **F8** in the hub takes four sample pictures and opens the reward screen with them (only in the hub; a sample you click is saved in `BepInEx\cache`, never your Pictures). |
 
 A moment it should have caught, or one it shouldn't have? [Tell us](https://github.com/HardHeadHackerHead/mycopunk-mods/issues/new?template=bug.yml&title=%5BQuad%27s%20Highlight%20Reel%5D%20).
 
@@ -124,7 +124,7 @@ helps me make new mods and keep improving the ones you already play. It's 100% o
 ## 📜 Recent changes
 
 <!-- RECENT-CHANGES -->
-- **0.1.0** First release: pictures of your best moments (bosses, melee kills, multi-kills, close calls, revives) when the mission's over, big when you point at them, and saved to your Pictures folder.
+- **0.1.0** First release: pictures of your best moments (bosses, melee kills, multi-kills, close calls, revives) when the mission's over, big when you point at them, saved when you click them.
 <!-- END RECENT-CHANGES -->
 
 [Every change](CHANGELOG.md)
